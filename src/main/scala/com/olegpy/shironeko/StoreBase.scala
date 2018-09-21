@@ -15,9 +15,6 @@ class StoreBase[F[_]](instance: => ConcurrentEffect[F])
 
   type Action = F[Unit]
 
-  def exec(a: Action): Unit = a.toIO.unsafeRunAsyncAndForget()
-  def execS(f: this.type => Action): Unit = exec(f(this))
-
   implicit private[shironeko] val ioShift: ContextShift[IO] = new ContextShift[IO] {
     def shift: IO[Unit] = F.unit.start.void.toIO
 

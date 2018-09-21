@@ -8,12 +8,12 @@ import cats.syntax.flatMap._
 
 trait EventStreams[F[_]] { this: StoreBase[F] =>
   protected object Events {
-    def apply[A](f: A => F[Unit]): Events[F, A] = {
-      val events = noHandler[A]
-      exec(events.listen.evalMap(f).compile.drain)
+    def apply[A]: Events[F, A] = new EventsImpl[A]
+    def handled[A](f: A => F[Unit]): Events[F, A] = {
+      val events = apply[A]
+      F.toIO(events.listen.evalMap(f).compile.drain).unsafeRunAsyncAndForget()
       events
     }
-    def noHandler[A]: Events[F, A] = new EventsImpl[A]
   }
 
   private class EventsImpl[A] extends Events[F, A] {
