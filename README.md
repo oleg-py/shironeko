@@ -1,3 +1,4 @@
+# Shironeko
 *A cat that can manage state*
 
 Shironeko is a state management library for Scala.js with the following goals:
