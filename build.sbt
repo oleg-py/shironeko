@@ -9,7 +9,7 @@ inThisBuild(Seq(
 ))
 
 lazy val root = project.in(file("."))
-  .aggregate(shironekoJVM, shironekoJS)
+  .aggregate(shironekoCoreJS, shironekoCoreJVM, shironekoSlinkyJS)
   .settings(commonSettings)
   .settings(
     skip in publish := true,
@@ -19,13 +19,29 @@ lazy val root = project.in(file("."))
     publishTo := None,
   )
 
-lazy val shironekoJS = shironeko.js
-lazy val shironekoJVM = shironeko.jvm
+lazy val shironekoCoreJS = shironekoCore.js
+lazy val shironekoCoreJVM = shironekoCore.jvm
 
-lazy val shironeko = crossProject
+lazy val shironekoCore = crossProject
   .crossType(CrossType.Pure)
-  .in(file("."))
+  .in(file("core"))
   .settings(commonSettings)
+  .settings(
+    name := "shironeko-core"
+  )
+
+lazy val shironekoSlinkyJS = shironekoSlinky.js
+
+lazy val shironekoSlinky = crossProject
+  .crossType(CrossType.Pure)
+  .dependsOn(shironekoCore)
+  .in(file("slinky"))
+  .settings(commonSettings)
+  .settings(
+    name := "shironeko-slinky",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.4.3",
+    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+  )
 
 def commonSettings = List(
   name := "shironeko",
