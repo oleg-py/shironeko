@@ -7,10 +7,13 @@ Shironeko is a state management library for Scala.js with the following goals:
 - Support writing logic in pure FP, with cats-effect and final tagless style
 - Be developer and IDE-friendly
 
+Currently only supports Scala 2.12
+
 ## Quick start
 
 ```scala
-libraryDependencies += "com.olegpy" %%% "shironeko" % "0.0.1"
+libraryDependencies += "com.olegpy" %%% "shironeko-core" % "0.0.1"
+libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.0.1" // Optional, integration with Slinky
 ```
 
 ### Your first store
@@ -27,7 +30,10 @@ The recommended way is to have a global store. You need to pass this instance in
 
 ```scala
 
-object Store extends StoreBase[IO](Main.Instance) with ImpureIntegration[IO] {
+object Store extends StoreBase[IO](Main.Instance)
+  with ImpureIntegration[IO]
+  with SlinkyIntegration[IO]
+{
   val counter = Cell(0)
 }
 ```
@@ -44,7 +50,19 @@ object Actions {
 }
 ```
 
-### Going tagless
+Finally, you can use it in react components. Here, we will use [slinky](https://slinky.shadaj.me/) with `shironeko-slinky` extension module:
+
+```scala
+object App extends Store.Component(Store.cell) {
+  def render(a: Int) = {
+    div(
+      span(s"Current value: $a"),
+      button(onClick := { () => Store.exec(Actions.increment})("Increment"),
+      button(onClick := { () => Store.exec(Actions.decrement})("Decrement")
+    )
+  }
+}
+```
 
 ## Core abstractions
 ### State cells (`Cell`)
