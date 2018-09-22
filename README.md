@@ -1,4 +1,6 @@
 # Shironeko
+![Maven central](https://img.shields.io/maven-central/v/com.olegpy/shironeko_2.12.svg?style=flat-square)
+
 *A cat that can manage state*
 
 Shironeko is a state management library for Scala.js with the following goals:
@@ -12,8 +14,8 @@ Currently only supports Scala 2.12
 ## Quick start
 
 ```scala
-libraryDependencies += "com.olegpy" %%% "shironeko-core" % "0.0.1"
-libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.0.1" // Optional, integration with Slinky
+libraryDependencies += "com.olegpy" %%% "shironeko-core" % "0.0.2"
+libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.0.2" // Optional, integration with Slinky
 ```
 
 ### Your first store
