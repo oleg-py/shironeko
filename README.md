@@ -1,5 +1,5 @@
 # Shironeko
-![Maven central](https://img.shields.io/maven-central/v/com.olegpy/shironeko_2.12.svg?style=flat-square)
+![Maven central](https://img.shields.io/maven-central/v/com.olegpy/shironeko-core_2.12.svg?style=flat-square)
 
 *A cat that can manage state*
 
