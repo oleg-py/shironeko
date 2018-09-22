@@ -5,7 +5,7 @@ import cats.effect.IO
 import cats.effect.concurrent.Ref
 import cats.implicits._
 import com.olegpy.shironeko.{Cell, StoreBase}
-import fs2.concurrent.Topic
+import fs2.concurrent.{SignallingRef, Topic}
 
 trait StateCells[F[_]] { this: StoreBase[F] =>
   protected object Cell {
@@ -13,45 +13,29 @@ trait StateCells[F[_]] { this: StoreBase[F] =>
   }
 
   private class CellImpl[A](initial: A) extends Cell[F, A] {
-    private[this] val underlying = Ref.unsafe[F, A](initial)
-    private[this] val topic = Topic[IO, A](initial).unsafeRunSync()
-    private[this] def notify(a: A) = topic.publish1(a).to[F]
+    private[this] val underlying = SignallingRef[IO, A](initial).unsafeRunSync()
 
-    def listen: fs2.Stream[F, A] = topic.subscribe(1).translate(natToF)
+    def listen: fs2.Stream[F, A] = underlying.discrete.translate(natToF)
 
-    def get: F[A] = underlying.get
-    def set(a: A): F[Unit] = notify(a) >> underlying.set(a)
-    def getAndSet(a: A): F[A] = notify(a) >> underlying.getAndSet(a)
+    def get: F[A] = underlying.get.to[F]
+    def set(a: A): F[Unit] = underlying.set(a).to[F]
+    def getAndSet(a: A): F[A] = underlying.getAndSet(a).to[F]
 
-    def access: F[(A, A => F[Boolean])] = underlying.access.map { case (get, set) =>
-      val newSet = (a: A) => set(a).flatTap {
-        case true  => notify(a)
-        case false => F.unit
-      }
-      (get, newSet)
-    }
+    def access: F[(A, A => F[Boolean])] = underlying.access.map {
+      case (a, afb) => (a, (a: A) => afb(a).to[F])
+    }.to[F]
 
-    def tryUpdate(f: A => A): F[Boolean] =
-      tryModify(a => (f(a), ())).map(_.nonEmpty)
+    def tryUpdate(f: A => A): F[Boolean] = underlying.tryUpdate(f).to[F]
 
-    def tryModify[B](f: A => (A, B)): F[Option[B]] =
-      modify(f).map(Some(_)) // TODO: I'm too lazy to implement that properly
+    def tryModify[B](f: A => (A, B)): F[Option[B]] = underlying.tryModify(f).to[F]
 
-    def update(f: A => A): F[Unit] = modify(a => (f(a), ()))
+    def update(f: A => A): F[Unit] = underlying.update(f).to[F]
 
-    def modify[B](f: A => (A, B)): F[B] =
-      underlying
-        .modify[(A, B)] { oldA =>
-          val (newA, b) =f(oldA)
-          (newA, (newA, b))
-        }
-        .flatTap { case (newA, _) => notify(newA) }
-        .map { case (_, b) => b}
+    def modify[B](f: A => (A, B)): F[B] = underlying.modify(f).to[F]
 
-    def tryModifyState[B](state: State[A, B]): F[Option[B]] =
-      tryModify(state.run(_).value)
+    def tryModifyState[B](state: State[A, B]): F[Option[B]] = underlying.tryModifyState(state).to[F]
 
     def modifyState[B](state: State[A, B]): F[B] =
-      modify(state.run(_).value)
+      underlying.modifyState(state).to[F]
   }
 }
