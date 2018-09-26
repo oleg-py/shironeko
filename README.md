@@ -14,8 +14,8 @@ Currently only supports Scala 2.12
 ## Quick start
 
 ```scala
-libraryDependencies += "com.olegpy" %%% "shironeko-core" % "0.0.2"
-libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.0.2" // Optional, integration with Slinky
+libraryDependencies += "com.olegpy" %%% "shironeko-core" % "0.0.3"
+libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.0.3" // Optional, integration with Slinky
 ```
 
 ### Your first store

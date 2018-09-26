@@ -4,7 +4,7 @@ import xerial.sbt.Sonatype._
 inThisBuild(Seq(
   organization := "com.olegpy",
   scalaVersion := "2.12.6",
-  version := "0.0.2",
+  version := "0.0.3",
   crossScalaVersions := Seq("2.12.6"),
 ))
 
@@ -51,7 +51,7 @@ def commonSettings = List(
   
   libraryDependencies ++= Seq(
     "org.typelevel" %%% "cats-effect" % "1.0.0",
-    "co.fs2"        %%% "fs2-core"    % "1.0.0-M5",
+    "co.fs2"        %%% "fs2-core"    % "1.0.0-RC1",
   ),
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),
