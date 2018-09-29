@@ -2,10 +2,8 @@ package com.olegpy.shironeko.internals
 
 import cats.data.State
 import cats.effect.IO
-import cats.effect.concurrent.Ref
-import cats.implicits._
 import com.olegpy.shironeko.{Cell, StoreBase}
-import fs2.concurrent.{SignallingRef, Topic}
+import fs2.concurrent.SignallingRef
 
 trait StateCells[F[_]] { this: StoreBase[F] =>
   protected object Cell {

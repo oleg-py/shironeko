@@ -21,8 +21,9 @@ trait EventStreams[F[_]] { this: StoreBase[F] =>
 
     def emit: Sink[F, A] = Sink(emit1)
 
-    def emit1(a: A): F[Unit] =
-      underlying.publish1(Some(a)).to[F]
+    def emit1(a: A): F[Unit] = F.delay {
+      underlying.publish1(Some(a)).unsafeRunAsyncAndForget()
+    }
 
     def listen: fs2.Stream[F, A] =
       underlying
