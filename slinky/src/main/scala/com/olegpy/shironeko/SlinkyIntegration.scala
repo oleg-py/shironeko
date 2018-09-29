@@ -20,7 +20,6 @@ trait SlinkyIntegration[F[_]] { this: StoreBase[F] =>
 }
 
 object SlinkyIntegration {
-  import internals.SlinkyHotLoadingWorkaround._
   // We cannot use inner classes, they cause runtime failure
   // b/c inner class' constuctor has outer object added as an implicit
   // first parameter per JVM spec. This is why this mess is necessary

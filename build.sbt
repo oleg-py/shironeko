@@ -4,7 +4,7 @@ import xerial.sbt.Sonatype._
 inThisBuild(Seq(
   organization := "com.olegpy",
   scalaVersion := "2.12.6",
-  version := "0.0.4",
+  version := "0.0.5",
   crossScalaVersions := Seq("2.12.6"),
 ))
 
@@ -39,7 +39,7 @@ lazy val shironekoSlinky = crossProject
   .settings(commonSettings)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.4.3",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.5.0",
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   )
 
