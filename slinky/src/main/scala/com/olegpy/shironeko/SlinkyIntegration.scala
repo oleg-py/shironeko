@@ -20,6 +20,10 @@ trait SlinkyIntegration[F[_]] { this: StoreBase[F] =>
 }
 
 object SlinkyIntegration {
+  // Workaround for odd issue I'm yet to report to slinky
+  private sealed trait Opt[+A]
+  private case class Som[+A](a: A) extends Opt[A]
+  private case object Non extends Opt[Nothing]
   // We cannot use inner classes, they cause runtime failure
   // b/c inner class' constuctor has outer object added as an implicit
   // first parameter per JVM spec. This is why this mess is necessary
@@ -30,9 +34,9 @@ object SlinkyIntegration {
       renderer: /*A*/Any => ReactElement,
       effect: ConcurrentEffect/*[F]*/[Any]
     )
-    type State = Option/*[A]*/[Any]
+    type State = Opt/*[A]*/[Any]
     class Def(jsProps: js.Object) extends Definition(jsProps) {
-      def initialState: Option/*[A]*/[Any] = None
+      def initialState: Opt/*[A]*/[Any] = Non
       private var cancelToken: CancelToken[IO] = _
 
       private def unsubscribe(): Unit =
@@ -44,7 +48,7 @@ object SlinkyIntegration {
         implicit val F: ConcurrentEffect[F] =
           props.effect.asInstanceOf[ConcurrentEffect[F]]
         val stream = props.stream.asInstanceOf[fs2.Stream[F, Any]]
-        val execute = stream.evalMap(s => F.delay(setState(Some(s))))
+        val execute = stream.evalMap(s => F.delay(setState(Som(s))))
           .compile.drain
         cancelToken = F.toIO(F.runCancelable(execute) {
           case Right(_) => IO.unit
@@ -53,7 +57,7 @@ object SlinkyIntegration {
         /*_*/
       }
 
-      override def shouldComponentUpdate(nextProps: Props, nextState: Option[Any]): Boolean = {
+      override def shouldComponentUpdate(nextProps: Props, nextState: Opt[Any]): Boolean = {
         nextState != state
       }
 
@@ -61,7 +65,10 @@ object SlinkyIntegration {
         unsubscribe()
       }
 
-      def render(): ReactElement = state.map(props.renderer)
+      def render(): ReactElement = state match {
+        case Som(a) => props.renderer(a)
+        case Non => None
+      }
     }
   }
 }
