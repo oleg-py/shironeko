@@ -40,7 +40,7 @@ object SlinkyIntegration {
       private var cancelToken: CancelToken[IO] = _
 
       private def unsubscribe(): Unit =
-        if (cancelToken != null) cancelToken.unsafeRunSync()
+        if (cancelToken != null) cancelToken.unsafeRunAsyncAndForget()
 
       override def componentWillMount(): Unit = {
         /*_*/
