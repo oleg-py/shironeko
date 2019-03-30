@@ -3,9 +3,9 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 inThisBuild(Seq(
   organization := "com.olegpy",
-  scalaVersion := "2.12.6",
-  version := "0.0.8",
-  crossScalaVersions := Seq("2.12.6"),
+  scalaVersion := "2.12.8",
+  version := "0.0.9",
+  crossScalaVersions := Seq("2.12.8"),
 ))
 
 lazy val root = project.in(file("."))
@@ -32,14 +32,14 @@ lazy val shironekoCore = crossProject(JSPlatform, JVMPlatform)
 
 lazy val shironekoSlinkyJS = shironekoSlinky.js
 
-lazy val shironekoSlinky = crossProject(JSPlatform, JVMPlatform)
+lazy val shironekoSlinky = crossProject(JSPlatform)
   .crossType(CrossType.Pure)
   .dependsOn(shironekoCore)
   .in(file("slinky"))
   .settings(commonSettings)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.5.0",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.0",
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   )
 
@@ -50,8 +50,8 @@ def commonSettings = List(
   homepage := Some(url("http://github.com/oleg-py/shironeko")),
 
   libraryDependencies ++= Seq(
-    "org.typelevel" %%% "cats-effect" % "1.1.0",
-    "co.fs2"        %%% "fs2-core"    % "1.0.2",
+    "org.typelevel" %%% "cats-effect" % "1.2.0",
+    "co.fs2"        %%% "fs2-core"    % "1.0.4",
   ),
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),

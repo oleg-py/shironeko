@@ -2,7 +2,7 @@ package com.olegpy.shironeko.internals
 
 import cats.effect.IO
 import com.olegpy.shironeko.{Events, StoreBase}
-import fs2.Sink
+import fs2.Pipe
 import fs2.concurrent.Topic
 import cats.syntax.flatMap._
 
@@ -19,7 +19,7 @@ trait EventStreams[F[_]] { this: StoreBase[F] =>
   private class EventsImpl[A] extends Events[F, A] {
     private val underlying = Topic[IO, Option[A]](None).unsafeRunSync()
 
-    def emit: Sink[F, A] = Sink(emit1)
+    def emit: Pipe[F, A, Unit] = _.evalMap(emit1)
 
     def emit1(a: A): F[Unit] = F.delay {
       underlying.publish1(Some(a)).unsafeRunAsyncAndForget()
