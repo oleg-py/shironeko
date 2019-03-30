@@ -2,3 +2,5 @@
 target
 .js
 .jvm
+.bloop/
+.metals/

@@ -1,5 +1,5 @@
 import xerial.sbt.Sonatype._
-
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 inThisBuild(Seq(
   organization := "com.olegpy",
@@ -22,7 +22,7 @@ lazy val root = project.in(file("."))
 lazy val shironekoCoreJS = shironekoCore.js
 lazy val shironekoCoreJVM = shironekoCore.jvm
 
-lazy val shironekoCore = crossProject
+lazy val shironekoCore = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(commonSettings)
@@ -32,7 +32,7 @@ lazy val shironekoCore = crossProject
 
 lazy val shironekoSlinkyJS = shironekoSlinky.js
 
-lazy val shironekoSlinky = crossProject
+lazy val shironekoSlinky = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .dependsOn(shironekoCore)
   .in(file("slinky"))
@@ -48,10 +48,10 @@ def commonSettings = List(
 
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("http://github.com/oleg-py/shironeko")),
-  
+
   libraryDependencies ++= Seq(
-    "org.typelevel" %%% "cats-effect" % "1.0.0",
-    "co.fs2"        %%% "fs2-core"    % "1.0.0-RC1",
+    "org.typelevel" %%% "cats-effect" % "1.1.0",
+    "co.fs2"        %%% "fs2-core"    % "1.0.2",
   ),
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),
