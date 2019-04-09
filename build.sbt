@@ -4,7 +4,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 inThisBuild(Seq(
   organization := "com.olegpy",
   scalaVersion := "2.12.8",
-  version := "0.0.9",
+  version := "0.1.0-SNAPSHOT",
   crossScalaVersions := Seq("2.12.8"),
 ))
 
