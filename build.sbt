@@ -60,6 +60,8 @@ def commonSettings = List(
     "-Ywarn-unused:params",
     "-Ywarn-unused:implicits",
   ),
+  publishConfiguration := publishConfiguration.value.withOverwrite(true),
+  publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true),
 
   publishTo := sonatypePublishTo.value,
   publishMavenStyle := true,

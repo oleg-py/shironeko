@@ -4,6 +4,7 @@ import cats.effect.{ConcurrentEffect, IO}
 import slinky.core.{FunctionalComponent, KeyAddingStage}
 import slinky.core.facade.{Hooks, React, ReactElement}
 import cats.implicits._
+import fs2.Pure
 
 class SlinkyConnector[F[_], Algebra] {
   private[this] val ctx = React.createContext(null.asInstanceOf[Algebra])
@@ -12,12 +13,12 @@ class SlinkyConnector[F[_], Algebra] {
   private[this] val providerFunc =
     FunctionalComponent[(Algebra, ConcurrentEffect[F], ReactElement)] {
       case (alg, f, elem) =>
-        Hooks.useEffect(() => {
-          F = f
-          () => { F = null }
-        }, Seq(f))
+        F = f
         ctx.Provider(alg)(elem)
     }
+
+  def apply(elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra): ReactElement =
+    apply(store)(elem)(F)
 
   def apply(store: Algebra)(elem: ReactElement)(implicit F: ConcurrentEffect[F]): ReactElement =
     providerFunc((store, F, elem))
@@ -30,10 +31,10 @@ class SlinkyConnector[F[_], Algebra] {
       F.runAsync(action)(IO.fromEither).unsafeRunSync()
 
     private[this] val impl = FunctionalComponent[Props] { props =>
-      implicit val ce: ConcurrentEffect[F] = F
       val self: Algebra = Hooks.useContext(ctx)
       val (storeState, setStoreState) = Hooks.useState(none[State])
       Hooks.useEffect(() => {
+        implicit val ce: ConcurrentEffect[F] = F
         val effect = subscribe(self)
           .evalMap { e => F.delay(setStoreState(e.some))}
           .compile.drain
@@ -57,5 +58,16 @@ class SlinkyConnector[F[_], Algebra] {
 
     final def render(state: State, props: Unit)(implicit F: Algebra): ReactElement =
       render(state)
+  }
+
+  trait ContainerNoState extends Container {
+    def render(props: Props)(implicit F: Algebra): ReactElement
+
+    type State = Unit
+    final override def subscribe(implicit F: Algebra): fs2.Stream[Pure, Unit] =
+      fs2.Stream(())
+
+    final override def render(state: Unit, props: Props)(implicit F: Algebra): ReactElement =
+      render(props)
   }
 }
