@@ -30,7 +30,7 @@ object Events {
       def emit1(a: A): F[Unit] =
         underlying.flatMap(_.publish1(a.some)).start.void
       val listen: Stream[F, A] =
-        Stream.force(underlying.map(_.subscribe(1))).unNone
+        Stream.force(underlying.map(_.subscribe(1).tail)).unNone
       def await1[B](pf: PartialFunction[A, B]): F[B] =
         listen.collectFirst(pf).compile.lastOrError
     }
