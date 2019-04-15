@@ -1,5 +1,6 @@
 package com.olegpy.shironeko
 
+import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, Resource, Sync, SyncIO}
 import fs2.concurrent.{SignallingRef, Topic}
 
@@ -7,6 +8,8 @@ import fs2.concurrent.{SignallingRef, Topic}
 trait StoreDSL[F[_]] {
   def cell[A](initial: A): Cell[F, A]
   def events[A]: Events[F, A]
+
+  def ref[A](initial: A): Ref[F, A]
 }
 
 object StoreDSL {
@@ -23,8 +26,10 @@ object StoreDSL {
         }
 
         def events[A]: Events[F, A] = guard {
-          Topic.in[SyncIO, F, Option[A]](None).unsafeRunSync()
+          new Events(Topic.in[SyncIO, F, Option[A]](None).unsafeRunSync())
         }
+
+        def ref[A](initial: A): Ref[F, A] = Ref.unsafe(initial)
       }
 
       (dsl, Sync[F].delay { isDone = true })

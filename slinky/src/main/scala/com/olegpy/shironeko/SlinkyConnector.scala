@@ -49,7 +49,7 @@ class SlinkyConnector[Algebra[_[_]]] {
           val token = F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
           () => exec.unsafeRunLater(token: Z[Unit])
         }, Seq())
-        storeState.map(render(_, props)(F, alg, exec))
+        storeState.map(render[Z](_, props)(F, alg, exec))
       }
     }
 

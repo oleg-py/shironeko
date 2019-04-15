@@ -9,7 +9,13 @@ inThisBuild(Seq(
 ))
 
 lazy val root = project.in(file("."))
-  .aggregate(shironekoCoreJS, shironekoCoreJVM, shironekoSlinkyJS)
+  .aggregate(
+    shironekoCoreJS,
+    shironekoCoreJVM,
+    shironekoSlinkyJS,
+    shironekoUtilJS,
+    shironekoUtilJVM,
+  )
   .settings(commonSettings)
   .settings(
     skip in publish := true,
@@ -28,6 +34,18 @@ lazy val shironekoCore = crossProject(JSPlatform, JVMPlatform)
   .settings(commonSettings)
   .settings(
     name := "shironeko-core"
+  )
+
+lazy val shironekoUtilJS = shironekoUtil.js
+lazy val shironekoUtilJVM = shironekoUtil.jvm
+
+lazy val shironekoUtil = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("util"))
+  .settings(commonSettings)
+  .settings(
+    name := "shironeko-util",
+    libraryDependencies += "com.chuusai" %%% "shapeless" % "2.3.3"
   )
 
 lazy val shironekoSlinkyJS = shironekoSlinky.js
