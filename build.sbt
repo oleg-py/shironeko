@@ -34,7 +34,6 @@ lazy val shironekoSlinkyJS = shironekoSlinky.js
 
 lazy val shironekoSlinky = crossProject(JSPlatform)
   .crossType(CrossType.Pure)
-  .dependsOn(shironekoCore)
   .in(file("slinky"))
   .settings(commonSettings)
   .settings(
@@ -46,12 +45,13 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
 def commonSettings = List(
   name := "shironeko",
 
+  resolvers += Resolver.sonatypeRepo("snapshots"),
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("http://github.com/oleg-py/shironeko")),
 
   libraryDependencies ++= Seq(
     "org.typelevel" %%% "cats-effect" % "1.2.0",
-    "co.fs2"        %%% "fs2-core"    % "1.0.4",
+    "co.fs2"        %%% "fs2-core"    % "1.0.5-SNAPSHOT",
   ),
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),
@@ -60,8 +60,6 @@ def commonSettings = List(
     "-Ywarn-unused:params",
     "-Ywarn-unused:implicits",
   ),
-  publishConfiguration := publishConfiguration.value.withOverwrite(true),
-  publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true),
 
   publishTo := sonatypePublishTo.value,
   publishMavenStyle := true,
