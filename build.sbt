@@ -45,7 +45,10 @@ lazy val shironekoUtil = crossProject(JSPlatform, JVMPlatform)
   .settings(commonSettings)
   .settings(
     name := "shironeko-util",
-    libraryDependencies += "com.chuusai" %%% "shapeless" % "2.3.3"
+    libraryDependencies ++= Seq(
+      "com.chuusai" %%% "shapeless" % "2.3.3",
+      "org.typelevel" %%% "kittens" % "1.2.1",
+    )
   )
 
 lazy val shironekoSlinkyJS = shironekoSlinky.js
@@ -70,6 +73,7 @@ def commonSettings = List(
   libraryDependencies ++= Seq(
     "org.typelevel" %%% "cats-effect" % "1.2.0",
     "co.fs2"        %%% "fs2-core"    % "1.0.5-SNAPSHOT",
+    compilerPlugin("org.typelevel" %% "kind-projector" % "0.10.0"),
   ),
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),
