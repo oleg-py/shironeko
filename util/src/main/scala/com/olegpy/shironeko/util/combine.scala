@@ -5,7 +5,7 @@ import cats.effect.Concurrent
 import cats.sequence._
 import fs2.Stream
 import fs2.concurrent.Signal
-import shapeless.{Generic, HList, Poly1}
+import shapeless.{Generic, HList, Poly1, ProductArgs}
 import cats.implicits._
 
 object combine {
@@ -18,11 +18,11 @@ object combine {
       at(s => Nested(s.holdOption))
   }
 
-  class CombinePartiallyApplied[A] {
+  class CombinePartiallyApplied[A] extends ProductArgs {
     def fromStreamsProduct[F[_], Streams <: HList, Opts <: HList, Repr <: HList](streams: Streams)(implicit
-      tr: Traverser.Aux[Streams, holdFn.type, N[F, Opts]], // fused 2-3
-      seq2: Sequencer.Aux[Opts, Option, Repr],                                            // 5
-      gen: Generic.Aux[A, Repr]                                                           // 6
+      tr: Traverser.Aux[Streams, holdFn.type, N[F, Opts]],
+      seq2: Sequencer.Aux[Opts, Option, Repr],
+      gen: Generic.Aux[A, Repr]
     ): Stream[F, A] =
       streams.traverse(holdFn).value
         .flatMap(_.discrete)
