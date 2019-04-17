@@ -18,7 +18,7 @@ object StoreDSL {
       var isDone = false
       def guard[A](block: => A) =
         if (!isDone) block
-        else sys.error("Attempt to use an instance of UnsafeDSL out of its scope")
+        else sys.error("Attempt to use an instance of StoreDSL out of its scope")
 
       val dsl = new StoreDSL[F] {
         def cell[A](initial: A): Cell[F, A] = guard {
@@ -29,7 +29,9 @@ object StoreDSL {
           new Events(Topic.in[SyncIO, F, Option[A]](None).unsafeRunSync())
         }
 
-        def ref[A](initial: A): Ref[F, A] = Ref.unsafe(initial)
+        def ref[A](initial: A): Ref[F, A] = guard {
+          Ref.unsafe(initial)
+        }
       }
 
       (dsl, Sync[F].delay { isDone = true })

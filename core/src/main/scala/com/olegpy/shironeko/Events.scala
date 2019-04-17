@@ -1,6 +1,7 @@
 package com.olegpy.shironeko
 
 import cats.effect.{Concurrent, Sync}
+import cats.syntax.functor._
 import fs2.{Pipe, Stream}
 import fs2.concurrent.Topic
 
@@ -19,6 +20,6 @@ class Events[F[_], A] (val asTopic: Topic[F, Option[A]]) {
 }
 
 object Events {
-  def apply[F[_], A](topic: Topic[F, Option[A]]): Events[F, A] =
-    new Events(topic)
+  def apply[F[_]: Concurrent, A]: F[Events[F, A]] =
+    Topic[F, Option[A]](None).map(new Events(_))
 }
