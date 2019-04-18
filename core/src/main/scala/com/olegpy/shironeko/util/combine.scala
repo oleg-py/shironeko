@@ -1,21 +1,22 @@
 package com.olegpy.shironeko.util
 
 import scala.reflect.macros.{TypecheckException, blackbox}
-import scala.language.experimental.macros
 
 import cats.effect.Concurrent
 
-object combineM {
+
+object combine {
   def apply[A] = new CombinePartiallyApplied[A]
 
   class CombinePartiallyApplied[A] {
-    def from[F[_]](args: fs2.Stream[F, _]*)(implicit F: Concurrent[F]): fs2.Stream[F, A] =
+    def from[F[_]](head: fs2.Stream[F, _], rest: fs2.Stream[F, _]*)(implicit F: Concurrent[F]): fs2.Stream[F, A] =
       macro combineMacro[F[_], A]
   }
 
   def combineMacro[F: c.WeakTypeTag, A: c.WeakTypeTag](c: blackbox.Context)
-    (args: c.Tree*)(F: c.Tree): c.Tree = {
+    (head: c.Tree, rest: c.Tree*)(F: c.Tree): c.Tree = {
     import c.universe._
+    val args = head +: rest
 
     val arity = args.length
     if (arity > 22) {

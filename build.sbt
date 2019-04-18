@@ -13,8 +13,6 @@ lazy val root = project.in(file("."))
     shironekoCoreJS,
     shironekoCoreJVM,
     shironekoSlinkyJS,
-    shironekoUtilJS,
-    shironekoUtilJVM,
   )
   .settings(commonSettings)
   .settings(
@@ -34,21 +32,6 @@ lazy val shironekoCore = crossProject(JSPlatform, JVMPlatform)
   .settings(commonSettings)
   .settings(
     name := "shironeko-core"
-  )
-
-lazy val shironekoUtilJS = shironekoUtil.js
-lazy val shironekoUtilJVM = shironekoUtil.jvm
-
-lazy val shironekoUtil = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure)
-  .in(file("util"))
-  .settings(commonSettings)
-  .settings(
-    name := "shironeko-util",
-    libraryDependencies ++= Seq(
-      "com.chuusai" %%% "shapeless" % "2.3.3",
-      "org.typelevel" %%% "kittens" % "1.2.1",
-    )
   )
 
 lazy val shironekoSlinkyJS = shironekoSlinky.js
