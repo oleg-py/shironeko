@@ -25,9 +25,9 @@ class Macros (val c: blackbox.Context) {
 
 
   def combineMacro[F: c.WeakTypeTag, A: c.WeakTypeTag]
-    (head: c.Tree, rest: c.Tree*)(F: c.Tree): c.Tree = {
+    (head: c.Tree, head2: c.Tree, rest: c.Tree*)(F: c.Tree): c.Tree = {
     import c.universe._
-    val args = (head :: rest.toList)
+    val args = (head :: head2 :: rest.toList)
       .mapConserve(c.untypecheck)
       .mapConserve(ClearExtractors.transform)
 
