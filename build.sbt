@@ -42,7 +42,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.0",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.1",
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   )
 

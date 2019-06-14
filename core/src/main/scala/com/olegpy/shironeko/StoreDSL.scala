@@ -29,9 +29,7 @@ object StoreDSL {
           new Events(Topic.in[SyncIO, F, Option[A]](None).unsafeRunSync())
         }
 
-        def ref[A](initial: A): Ref[F, A] = guard {
-          Ref.unsafe(initial)
-        }
+        def ref[A](initial: A): Ref[F, A] = guard { Ref.unsafe(initial) }
       }
 
       (dsl, Sync[F].delay { isDone = true })

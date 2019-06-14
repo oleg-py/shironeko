@@ -1,5 +1,8 @@
 package com.olegpy.shironeko.interop
 
+import cats.effect.{Effect, IO}
+
+
 abstract class Exec[F[_]] private[shironeko]() {
   def unsafeRunLater[A](fa: F[A]): Unit
 }
@@ -17,5 +20,10 @@ object Exec {
 
     final protected def toCallback[F[_]: Exec, A, B](action: (A, B) => F[Unit]): (A, B) => Unit =
       (a, b) => exec(action(a, b))
+  }
+
+  def fromEffect[F[_]](implicit F: Effect[F]): Exec[F] = new Exec[F] {
+    def unsafeRunLater[A](fa: F[A]): Unit =
+      F.runAsync(F.void(fa))(IO.fromEither).unsafeRunSync()
   }
 }

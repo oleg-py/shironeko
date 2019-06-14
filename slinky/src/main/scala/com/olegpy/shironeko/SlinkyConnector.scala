@@ -13,6 +13,9 @@ class SlinkyConnector[Algebra[_[_]]] {
   private[this] val ctx = React.createContext(null.asInstanceOf[Algebra[Z]])
   private[this] var F: ConcurrentEffect[Z] = _
 
+  // Enable use of hooks in custom `def render`
+  private[this] val shift = FunctionalComponent[ReactElement] { el => el }
+
   private[this] val providerFunc =
     FunctionalComponent[(Algebra[Z], ConcurrentEffect[Z], ReactElement)] {
       case (alg, f, elem) =>
@@ -35,10 +38,7 @@ class SlinkyConnector[Algebra[_[_]]] {
     private[this] val impl = FunctionalComponent[Props] { props => {
       val alg = Hooks.useContext(ctx)
       val (storeState, setStoreState) = Hooks.useState(none[State[Z]])
-      implicit val exec: Exec[Z] = new Exec[Z] {
-        def unsafeRunLater[A](fa: Z[A]): Unit =
-          F.runAsync(F.void(fa))(IO.fromEither).unsafeRunSync()
-      }
+      implicit val exec: Exec[Z] = Exec.fromEffect(F)
 
       Hooks.useEffect(() => {
         implicit val ce: ConcurrentEffect[Z] = F
@@ -49,7 +49,7 @@ class SlinkyConnector[Algebra[_[_]]] {
         val token = F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
         () => exec.unsafeRunLater(token: Z[Unit])
       }, Seq())
-      storeState.map(render[Z](_, props)(F, alg, exec))
+      storeState.map(state => shift(render[Z](state, props)(F, alg, exec)))
     } }
 
     def apply(props: Props): KeyAddingStage = impl(props)
