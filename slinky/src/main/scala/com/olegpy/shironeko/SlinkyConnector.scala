@@ -1,6 +1,6 @@
 package com.olegpy.shironeko
 
-import cats.effect.{Concurrent, ConcurrentEffect, IO}
+import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, IO, Timer}
 import slinky.core.{FunctionalComponent, KeyAddingStage}
 import slinky.core.facade.{Hooks, React, ReactElement}
 import cats.implicits._
@@ -18,9 +18,6 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
 
   private[this] val ctxAlg = React.createContext(null.asInstanceOf[Algebra[Z]])
   private[this] val ctxF = React.createContext(null.asInstanceOf[ConcurrentEffect[Z]])
-
-  // Enable use of hooks in custom `def render`
-  private[this] val shift = FunctionalComponent[ReactElement] { el => el }
 
   private[this] val providerFunc =
     FunctionalComponent[(Algebra[Z], ConcurrentEffect[Z], ReactElement)] {
@@ -76,7 +73,7 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
         val token = F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
         () => ExecInstance.unsafeRunLater(token: Z[Unit])
       }, Seq())
-      storeState.map(state => shift(render[Z](state, props)))
+      storeState.map(state => render[Z](state, props))
     } }
 
     def apply(props: Props): KeyAddingStage = impl(props)
@@ -99,7 +96,7 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
     type State
     type Props
 
-    // Copying this over, for ergonomics
+    // Copying these over, for ergonomics
     final type Subscribe[f[_]] = conn.Subscribe[f]
     final type Render[f[_]] = conn.Render[f]
 
