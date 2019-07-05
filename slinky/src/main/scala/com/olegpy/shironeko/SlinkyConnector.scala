@@ -9,6 +9,8 @@ import cats.implicits._
 import com.olegpy.shironeko.interop.Exec
 import fs2.{Pull, Pure}
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 // TODO: improve implicits usage
 class SlinkyConnector[Algebra[_[_]]] { conn =>
   // We use an "unknown" erased type to represent whatever the algebra is used with
@@ -63,36 +65,34 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
         AlgInstance = alg
         ExecInstance = Exec.fromEffect(F)
       }, Seq(F, alg))
+      val rendered = Hooks.useMemo(() => new AtomicBoolean(false), Seq())
 
       implicit val dummy: Render[Z] = null
 
-      var continuation = subscribe[Z]
+      val (storeState, setStoreState) = Hooks.useState(none[State[Z]])
 
-      val (storeState, setStoreState) = Hooks.useState[Option[State[Z]]](() => {
-        try {
-          // If we can pull the value synchronously, we can avoid UI flashing
-          F.toIO {
-            continuation.pull.uncons1.flatMap {
-              case Some((hd, tl)) =>
-                continuation = tl
-                Pull.output1(hd.some)
-              case None => Pull.output1(none[State[Z]])
-            }.stream.take(1).compile.lastOrError
-          }.unsafeRunSync()
-        } catch {
-          case NonFatal(_) => none
-        }
-      })
-
-      Hooks.useEffect(() => {
-        val effect = continuation
-          .evalMap { e => F.delay(setStoreState(e.some))}
+      var actualState = storeState
+      val token: Z[Unit] = Hooks.useMemo(() => {
+        // This part is expected to run synchronously if possible to avoid extra flashing
+        // That is true for monix w/ default config and cats IO if used with fs2 Signals
+        // but if it's not possible to avoid async boundary for next write, we'll set
+        // the state later, after render
+        val effect = subscribe[Z]
+          .evalMap(e => F.delay {
+            val s = e.some
+            actualState = s
+            if (rendered.get()) setStoreState(s)
+          })
           .compile.drain
 
-        val token = F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
-        () => ExecInstance.unsafeRunLater(token: Z[Unit])
+        F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
       }, Seq())
-      storeState.map(state => render[Z](state, props))
+
+      Hooks.useEffect(() => {
+        rendered.set(true)
+        () => F.runCancelable(token)(IO.fromEither).unsafeRunSync()
+      }, Seq())
+      actualState.map(state => render[Z](state, props))
     } }
 
     def apply(props: Props): KeyAddingStage = impl(props)
