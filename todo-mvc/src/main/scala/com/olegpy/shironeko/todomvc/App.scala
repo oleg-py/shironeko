@@ -43,7 +43,8 @@ object TodoApp extends Connector.Container {
             TodoList(
               visibleTodos,
               toCallback(TodoActions().setStatus _),
-              toCallback(TodoActions().destroy _)
+              toCallback(TodoActions().destroy _),
+              toCallback(TodoActions().setText _),
             ),
             Filters(
               activeCount,

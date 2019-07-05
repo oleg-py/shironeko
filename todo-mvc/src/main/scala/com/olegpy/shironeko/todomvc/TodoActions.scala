@@ -4,6 +4,12 @@ import monix.eval.Task
 
 
 class TodoActions (private val S: TodoStore) extends AnyVal {
+  def setText(id: Long, text: String): Task[Unit] =
+    S.todos.update(_.collect {
+      case todo if todo.id == id => todo.copy(text = text)
+      case other => other
+    })
+
   def createTodo(text: String): Task[Unit] =
     S.freshId
      .map(TodoItem(_, text))
