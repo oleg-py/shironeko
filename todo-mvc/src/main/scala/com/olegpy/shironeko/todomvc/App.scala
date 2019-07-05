@@ -1,65 +1,59 @@
 package com.olegpy.shironeko.todomvc
 
 import com.olegpy.shironeko.todomvc.components._
-import com.olegpy.shironeko.util.combine
 import cats.implicits._
 import slinky.web.html._
 import monix.eval.Task
 import slinky.core.facade.{Fragment, ReactElement}
 
 
-object App extends Connector.ContainerNoProps {
-  case class State(
-    todos: Vector[TodoItem],
-    filter: Filter
-  ) {
+object TodoApp extends Connector.Container {
+  type Props = Filter
+  type State = Vector[TodoItem]
+
+  override def subscribe: fs2.Stream[Task, State] =
+    TodoStore().todos.discrete
+
+  override def render(todos: State, filter: Props): ReactElement = {
     val visibleTodos: Vector[TodoItem] = todos.filter(filter.matches)
     val activeCount: Int = todos.count(!_.isCompleted)
     val hasCompleted: Boolean = todos.exists(_.isCompleted)
     val allCompleted: Boolean = todos.forall(_.isCompleted)
-  }
-
-  override def subscribe: fs2.Stream[Task, State] =
-    combine[State].from(
-      TodoStore().todos.discrete,
-      TodoStore().filter.discrete
-    )
-
-  override def render(state: State): ReactElement = Fragment(
-    section(className := "todoapp")(
-      header(className := "header")(
-        h1("todos"),
-        NewTodoInput(toCallback(TodoActions().createTodo _))
-      ),
-      if (state.todos.nonEmpty) {
-        section(className := "main")(
-          input(
-            id := "toggle-all",
-            className := "toggle-all",
-            `type` := "checkbox",
-            checked := state.allCompleted,
-            onChange := { e =>
-              exec(TodoActions().setAllStatus(e.target.checked))
-            }
-          ),
-          label(
-            htmlFor := "toggle-all",
-            title := "Mark all as complete",
-          ),
-          TodoList(
-            state.visibleTodos,
-            toCallback(TodoActions().setStatus _),
-            toCallback(TodoActions().destroy _)
-          ),
-          Filters(
-            state.activeCount,
-            state.filter,
-            toCallback(TodoActions().clearCompleted).some.filter(_ => state.hasCompleted),
-            toCallback(TodoActions().setFilter _)
+    Fragment(
+      section(className := "todoapp")(
+        header(className := "header")(
+          h1("todos"),
+          NewTodoInput(toCallback(TodoActions().createTodo _))
+        ),
+        if (todos.nonEmpty) {
+          section(className := "main")(
+            input(
+              id := "toggle-all",
+              className := "toggle-all",
+              `type` := "checkbox",
+              checked := allCompleted,
+              onChange := { e =>
+                exec(TodoActions().setAllStatus(e.target.checked))
+              }
+            ),
+            label(
+              htmlFor := "toggle-all",
+              title := "Mark all as complete",
+            ),
+            TodoList(
+              visibleTodos,
+              toCallback(TodoActions().setStatus _),
+              toCallback(TodoActions().destroy _)
+            ),
+            Filters(
+              activeCount,
+              filter,
+              toCallback(TodoActions().clearCompleted).some.filter(_ => hasCompleted),
+            )
           )
-        )
-      } else None,
-    ),
-    TodoInfo()
-  )
+        } else None,
+      ),
+      TodoInfo()
+    )
+  }
 }

@@ -33,7 +33,6 @@ object TodoLocalStorage {
   private[this] def save(filter: Filter, todos: Vector[TodoItem]): Task[Unit] = {
     val fields: Vector[TodoItem => String] = Vector(_.id.toString, _.text, _.isCompleted.toString)
     val content = filter.toString ++ separator ++ todos.flatMap(fields.mapApply).mkString(separator)
-    println(content)
     Task(ls.setItem(key, content))
   }
 

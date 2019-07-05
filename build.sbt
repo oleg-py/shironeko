@@ -1,5 +1,5 @@
+import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import xerial.sbt.Sonatype._
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 inThisBuild(Seq(
   organization := "com.olegpy",
@@ -55,6 +55,7 @@ lazy val todoMVC = project
   .settings(commonSettings)
   .settings(
     name := "shironeko-slinky-todomvc",
+    resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped"),
 
     npmDependencies in Compile ++= Seq(
       "react" -> "16.8.6",
@@ -68,6 +69,7 @@ lazy val todoMVC = project
       "copy-webpack-plugin" -> "5.0.2",
       "webpack-merge" -> "4.2.1",
 
+      "react-router-dom" -> "5.0.1",
       "todomvc-app-css" -> "2.2.0"
     ),
 
@@ -75,6 +77,8 @@ lazy val todoMVC = project
       "me.shadaj" %%% "slinky-web" % "0.6.0",
       "me.shadaj" %%% "slinky-hot" % "0.6.0",
       "io.monix" %%% "monix-eval" % "3.0.0-RC3",
+      ScalablyTyped.R.`react-router-dom`,
+      ScalablyTyped.R.`react-slinky-facade`,
     ),
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),

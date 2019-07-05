@@ -1,11 +1,13 @@
 package com.olegpy.shironeko
 
-import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, IO, Timer}
+import scala.util.control.NonFatal
+
+import cats.effect.{Concurrent, ConcurrentEffect, IO}
 import slinky.core.{FunctionalComponent, KeyAddingStage}
 import slinky.core.facade.{Hooks, React, ReactElement}
 import cats.implicits._
 import com.olegpy.shironeko.interop.Exec
-import fs2.Pure
+import fs2.{Pull, Pure}
 
 // TODO: improve implicits usage
 class SlinkyConnector[Algebra[_[_]]] { conn =>
@@ -56,17 +58,34 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
     private[this] val impl = FunctionalComponent[Props] { props => {
       val F = Hooks.useContext(ctxF)
       val alg = Hooks.useContext(ctxAlg)
-      Hooks.useEffect(() => {
+      Hooks.useMemo(() => {
         CEInstance = F
         AlgInstance = alg
         ExecInstance = Exec.fromEffect(F)
       }, Seq(F, alg))
 
-      val (storeState, setStoreState) = Hooks.useState(none[State[Z]])
       implicit val dummy: Render[Z] = null
 
+      var continuation = subscribe[Z]
+
+      val (storeState, setStoreState) = Hooks.useState[Option[State[Z]]](() => {
+        try {
+          // If we can pull the value synchronously, we can avoid UI flashing
+          F.toIO {
+            continuation.pull.uncons1.flatMap {
+              case Some((hd, tl)) =>
+                continuation = tl
+                Pull.output1(hd.some)
+              case None => Pull.output1(none[State[Z]])
+            }.stream.take(1).compile.lastOrError
+          }.unsafeRunSync()
+        } catch {
+          case NonFatal(_) => none
+        }
+      })
+
       Hooks.useEffect(() => {
-        val effect = subscribe[Z]
+        val effect = continuation
           .evalMap { e => F.delay(setStoreState(e.some))}
           .compile.drain
 

@@ -1,6 +1,7 @@
 package com.olegpy.shironeko.todomvc.components
 
 import com.olegpy.shironeko.todomvc.Filter
+import com.olegpy.shironeko.todomvc.Routes.Link
 import slinky.core.StatelessComponent
 import slinky.core.annotations.react
 import slinky.core.facade.ReactElement
@@ -12,7 +13,6 @@ import slinky.web.html._
     activeCount: Int,
     filter: Filter,
     onClear: Option[() => Unit],
-    setFilter: Filter => Unit
   )
 
   override def render(): ReactElement = {
@@ -24,9 +24,9 @@ import slinky.web.html._
         " left"
       ),
       ul(className := "filters")(
-        Seq(Filter.All, Filter.Active, Filter.Completed).map { f =>
+        Seq(Filter.All -> "/", Filter.Active -> "/active", Filter.Completed -> "/completed").map { case (f, to) =>
           val active = if (f == props.filter) "selected" else ""
-          li()(a(className := active, onClick := { () => props.setFilter(f) })(f.toString))
+          li()(Link(to, active)(f.toString))
         }: _*
       ),
       props.onClear.map { fn =>
