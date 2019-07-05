@@ -1,28 +1,29 @@
 package com.olegpy.shironeko.todomvc.components
 
-import slinky.core.Component
+import com.olegpy.shironeko.util.shift
+import slinky.core.StatelessComponent
 import slinky.core.annotations.react
-import slinky.core.facade.ReactElement
+import slinky.core.facade.{Hooks, ReactElement}
 import slinky.web.html._
 
 
-@react class NewTodoInput extends Component {
+@react class NewTodoInput extends StatelessComponent {
   case class Props(onCommit: String => Unit)
-  type State = String
-  override def initialState: String = ""
 
-  override def render(): ReactElement =
+  override def render(): ReactElement = shift {
+    val (text, setText) = Hooks.useState("")
     input(
       className := "new-todo",
       placeholder := "What needs to be done?",
       autoFocus := true,
-      value := state,
-      onChange := { e => setState(e.target.value) },
+      value := text,
+      onChange := { e => setText(e.target.value) },
       onKeyPress := { e =>
         if (e.key == "Enter") {
-          props.onCommit(state)
-          setState("")
+          props.onCommit(text)
+          setText("")
         }
       }
     )
+  }
 }

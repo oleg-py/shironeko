@@ -27,6 +27,7 @@ object Main extends TaskApp {
     StoreDSL[Task].use(new TodoStore(_).pure[Task])
       .product(getRoot)
       .flatMap { case (store, container) =>
+        TodoLocalStorage.setup(store) >>
         Task(ReactDOM.render(Connector(store)(App(42)), container))
       } >> Task.never[ExitCode]
   }

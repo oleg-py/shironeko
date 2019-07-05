@@ -1,8 +1,9 @@
 package com.olegpy.shironeko.todomvc
 
 import com.olegpy.shironeko.todomvc.components._
-import slinky.web.html._
 import com.olegpy.shironeko.util.combine
+import cats.implicits._
+import slinky.web.html._
 import monix.eval.Task
 import slinky.core.facade.{Fragment, ReactElement}
 
@@ -14,6 +15,7 @@ object App extends Connector.ContainerNoProps {
   ) {
     val visibleTodos: Vector[TodoItem] = todos.filter(filter.matches)
     val activeCount: Int = todos.count(!_.isCompleted)
+    val hasCompleted: Boolean = todos.exists(_.isCompleted)
     val allCompleted: Boolean = todos.forall(_.isCompleted)
   }
 
@@ -27,7 +29,7 @@ object App extends Connector.ContainerNoProps {
     section(className := "todoapp")(
       header(className := "header")(
         h1("todos"),
-        NewTodoInput(toCallback(TodoActions.createTodo _))
+        NewTodoInput(toCallback(TodoActions().createTodo _))
       ),
       if (state.todos.nonEmpty) {
         section(className := "main")(
@@ -37,7 +39,7 @@ object App extends Connector.ContainerNoProps {
             `type` := "checkbox",
             checked := state.allCompleted,
             onChange := { e =>
-              exec(TodoActions.setAllStatus(e.target.checked))
+              exec(TodoActions().setAllStatus(e.target.checked))
             }
           ),
           label(
@@ -46,9 +48,15 @@ object App extends Connector.ContainerNoProps {
           ),
           TodoList(
             state.visibleTodos,
-            toCallback(TodoActions.setStatus _),
-            toCallback(TodoActions.destroy _)
+            toCallback(TodoActions().setStatus _),
+            toCallback(TodoActions().destroy _)
           ),
+          Filters(
+            state.activeCount,
+            state.filter,
+            toCallback(TodoActions().clearCompleted).some.filter(_ => state.hasCompleted),
+            toCallback(TodoActions().setFilter _)
+          )
         )
       } else None,
     ),
