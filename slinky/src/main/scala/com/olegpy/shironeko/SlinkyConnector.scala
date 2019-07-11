@@ -1,13 +1,10 @@
 package com.olegpy.shironeko
 
-import scala.util.control.NonFatal
-
 import cats.effect.{Concurrent, ConcurrentEffect, IO}
 import slinky.core.{FunctionalComponent, KeyAddingStage}
 import slinky.core.facade.{Hooks, React, ReactElement}
 import cats.implicits._
 import com.olegpy.shironeko.interop.Exec
-import fs2.{Pull, Pure}
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -88,8 +85,8 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
         F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
       }, Seq())
 
+      rendered.set(true)
       Hooks.useEffect(() => {
-        rendered.set(true)
         () => F.runCancelable(token)(IO.fromEither).unsafeRunSync()
       }, Seq())
       actualState.map(state => render[Z](state, props))
@@ -161,7 +158,7 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
     def render[F[_]: Render](props: Props): ReactElement
 
     type State = Unit
-    final override def subscribe[F[_]: Subscribe]: fs2.Stream[Pure, Unit] =
+    final override def subscribe[F[_]: Subscribe]: fs2.Stream[F, Unit] =
       fs2.Stream(())
 
     final override def render[F[_]: Render](state: Unit, props: Props): ReactElement =
