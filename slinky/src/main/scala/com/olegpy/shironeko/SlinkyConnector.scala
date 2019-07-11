@@ -102,12 +102,11 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
   }
 
   trait ContainerFNoProps extends ContainerF {
-    def render[F[_]: Concurrent: Algebra: Exec](state: State[F]): ReactElement
-
+    def render[F[_]: Render](state: State[F]): ReactElement
 
     type Props = Unit
     def apply(): KeyAddingStage = apply(())
-    final def render[F[_]: Concurrent: Algebra: Exec](state: State[F], props: Unit): ReactElement =
+    final def render[F[_]: Render](state: State[F], props: Unit): ReactElement =
       render(state)
   }
 
