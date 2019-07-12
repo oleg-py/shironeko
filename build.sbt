@@ -22,6 +22,16 @@ lazy val root = project.in(file("."))
     publishArtifact := false,
     publishTo := None,
   )
+  .enablePlugins(MicrositesPlugin)
+  .settings(
+    micrositeName := "Shironeko",
+    micrositeCompilingDocsTool := WithMdoc,
+    micrositeGithubOwner := "oleg-py",
+    micrositeGithubRepo := "shironeko",
+    micrositeGitterChannel := false, // TODO - maaaaybee
+    micrositeDataDirectory := { baseDirectory.value / "site" },
+    micrositeAuthor := "Oleg Pyzhcov",
+  )
 
 lazy val shironekoCoreJS = shironekoCore.js
 lazy val shironekoCoreJVM = shironekoCore.jvm
