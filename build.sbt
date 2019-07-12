@@ -43,7 +43,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.1",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.2",
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   )
 
@@ -74,8 +74,8 @@ lazy val todoMVC = project
     ),
 
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.6.0",
-      "me.shadaj" %%% "slinky-hot" % "0.6.0",
+      "me.shadaj" %%% "slinky-web" % "0.6.2",
+      "me.shadaj" %%% "slinky-hot" % "0.6.2",
       "io.monix" %%% "monix-eval" % "3.0.0-RC3",
       ScalablyTyped.R.`react-router-dom`,
       ScalablyTyped.R.`react-slinky-facade`,

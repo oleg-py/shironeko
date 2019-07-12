@@ -57,7 +57,7 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
     private[this] val impl = FunctionalComponent[Props] { props => {
       val F = Hooks.useContext(ctxF)
       val alg = Hooks.useContext(ctxAlg)
-      Hooks.useMemo(() => {
+      Hooks.useMemo(() => { // TODO - can we remove this to let you use multiple algebras?
         CEInstance = F
         AlgInstance = alg
         ExecInstance = Exec.fromEffect(F)

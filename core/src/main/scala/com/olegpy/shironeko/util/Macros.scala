@@ -86,6 +86,14 @@ class Macros (val c: blackbox.Context) {
 
   private object ClearExtractors extends Transformer {
     override def transform(tree: Tree): Tree = tree match {
+      // TODO: this is hacky fix that allows using combine in combine. Needs better solution
+      case TypeApply(stuff, list) if list.exists {
+        case tt @ TypeTree() =>
+          val name = tt.symbol.fullName
+          name == "scala.Any" || name == "scala.Nothing"
+        case _ => false
+      } =>
+        transform(stuff)
       case UnApply(Apply(XSelect(qual, UNAPPLY | UNAPPLY_SEQ), List(Ident(SELECTOR_DUMMY))), pats) =>
         Apply(transform(qual), this.transformTrees(pats))
       case _ => super.transform(tree)
