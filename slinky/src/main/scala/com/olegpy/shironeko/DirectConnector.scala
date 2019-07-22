@@ -8,7 +8,7 @@ import slinky.core.facade.{ReactElement}
 
 
 class DirectConnector[F[_], Algebra] {
-  private[this] object Underlying extends SlinkyConnector[λ[f[_] => Algebra]]
+  private[this] object Underlying extends TaglessConnector[λ[f[_] => Algebra]]
 
   def apply(elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra): ReactElement =
     Underlying(elem)(F, store)

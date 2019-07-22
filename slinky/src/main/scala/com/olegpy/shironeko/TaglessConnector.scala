@@ -6,10 +6,8 @@ import slinky.core.facade.{Hooks, React, ReactElement}
 import cats.implicits._
 import com.olegpy.shironeko.interop.Exec
 
-import java.util.concurrent.atomic.AtomicBoolean
 
-// TODO: improve implicits usage
-class SlinkyConnector[Algebra[_[_]]] { conn =>
+class TaglessConnector[Algebra[_[_]]] { conn =>
   // We use an "unknown" erased type to represent whatever the algebra is used with
   private[shironeko] type Z[_]
 
@@ -62,7 +60,7 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
         AlgInstance = alg
         ExecInstance = Exec.fromEffect(F)
       }, Seq(F, alg))
-      val rendered = Hooks.useMemo(() => new AtomicBoolean(false), Seq())
+      val rendered = Hooks.useRef(false)
 
       implicit val dummy: Render[Z] = null
 
@@ -78,14 +76,14 @@ class SlinkyConnector[Algebra[_[_]]] { conn =>
           .evalMap(e => F.delay {
             val s = e.some
             actualState = s
-            if (rendered.get()) setStoreState(s)
+            if (rendered.current) setStoreState(s)
           })
           .compile.drain
 
         F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
       }, Seq())
 
-      rendered.set(true)
+      rendered.current = true
       Hooks.useEffect(() => {
         () => F.runCancelable(token)(IO.fromEither).unsafeRunSync()
       }, Seq())
