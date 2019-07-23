@@ -31,6 +31,8 @@ lazy val root = project.in(file("."))
     micrositeGitterChannel := false, // TODO - maaaaybee
     micrositeDataDirectory := { baseDirectory.value / "site" },
     micrositeAuthor := "Oleg Pyzhcov",
+    mdocJS := Some(jsdocs),
+    mdocJSLibraries := webpack.in(jsdocs, Compile, fullOptJS).value
   )
 
 lazy val shironekoCoreJS = shironekoCore.js
@@ -57,10 +59,33 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   )
 
+lazy val jsdocs = project
+  .enablePlugins(ScalaJSBundlerPlugin)
+  .dependsOn(shironekoSlinkyJS)
+  .settings(commonSettings)
+  .settings(
+    name := "shironeko-slinky-jsdocs",
+    scalaJSUseMainModuleInitializer := true,
+
+    npmDependencies in Compile ++= Seq(
+      "react" -> "16.8.6",
+      "react-dom" -> "16.8.6",
+      "react-proxy" -> "1.1.8",
+      "webpack-merge" -> "4.2.1",
+    ),
+
+    libraryDependencies ++= Seq(
+      "me.shadaj" %%% "slinky-web" % "0.6.2",
+    ),
+    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+    webpackBundlingMode := BundlingMode.LibraryOnly(),
+    scalaJSModuleKind := ModuleKind.CommonJSModule,
+  )
+
 lazy val todoMVC = project
   .in(file("todo-mvc"))
   .enablePlugins(ScalaJSBundlerPlugin)
-  .settings(commonSettings)
   .dependsOn(shironekoSlinkyJS)
   .settings(commonSettings)
   .settings(
