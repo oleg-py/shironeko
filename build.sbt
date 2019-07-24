@@ -32,7 +32,8 @@ lazy val root = project.in(file("."))
     micrositeDataDirectory := { baseDirectory.value / "site" },
     micrositeAuthor := "Oleg Pyzhcov",
     mdocJS := Some(jsdocs),
-    mdocJSLibraries := webpack.in(jsdocs, Compile, fullOptJS).value
+    mdocJSLibraries := webpack.in(jsdocs, Compile, fullOptJS).value,
+//    mdocVariables := Map("js-opt" -> "fast"),
   )
 
 lazy val shironekoCoreJS = shironekoCore.js
@@ -81,6 +82,7 @@ lazy val jsdocs = project
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
     webpackBundlingMode := BundlingMode.LibraryOnly(),
     scalaJSModuleKind := ModuleKind.CommonJSModule,
+//    scalaJSLinkerConfig ~= { _.withOptimizer(false) },
   )
 
 lazy val todoMVC = project
