@@ -5,4 +5,4 @@ section: home
 position: 0
 ---
 
-Hmm...
+The site is under construction

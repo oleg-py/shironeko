@@ -56,7 +56,7 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
       val F = Hooks.useContext(ctxF)
       if (F eq null) {
         throw new IllegalStateException(
-          s"ConcurrentEffect instance was not provided to component. Make sure ${SlinkyConnector.this.getClass.getName}.apply is called above every container"
+          s"ConcurrentEffect instance was not provided to component. Make sure ${conn.getClass.getName}.apply is called above every container"
         )
       }
       val alg = Hooks.useContext(ctxAlg)

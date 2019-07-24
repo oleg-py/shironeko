@@ -28,6 +28,7 @@ lazy val root = project.in(file("."))
     micrositeCompilingDocsTool := WithMdoc,
     micrositeGithubOwner := "oleg-py",
     micrositeGithubRepo := "shironeko",
+    micrositeBaseUrl := "/shironeko",
     micrositeGitterChannel := false, // TODO - maaaaybee
     micrositeDataDirectory := { baseDirectory.value / "site" },
     micrositeAuthor := "Oleg Pyzhcov",

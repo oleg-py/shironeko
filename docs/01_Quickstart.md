@@ -4,9 +4,27 @@ title: Quickstart
 position: 1
 ---
 
-First, describe an _algebra_ containing any data that needs to be
-rendered on update. This algebra is similar in spirit to store in Redux
-or circuit in Diode.
+If you don't have a slinky project yet, I recommend to start from the
+official template:
+```
+$ sbt new shadaj/create-react-scala-app.g8
+```
+
+And add shironeko as a dependency:
+
+```scala
+//TODO: Not yet released
+libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.1.0"
+```
+
+This will transitively pull shironeko-core, cats-effect and fs2. You
+might want to specify concrete versions of those directly.
+
+---
+
+First, you need to describe an _algebra_ containing any data that needs
+to be rendered on update. This algebra is similar in spirit to store in
+Redux or circuit in Diode.
 
 For the sake of example, let's implement a simple
 component that will update itself periodically:
@@ -30,7 +48,7 @@ state. To do it, we will need something called a `Connector`. Connector
 links the algebra to a set of components that are going to use it.
 
 ```scala mdoc:js:shared
-object Connector extends SlinkyConnector[Algebra]
+object Connector extends TaglessConnector[Algebra]
 ```
 
 `Connector` contains several base classes for components that link 
@@ -52,7 +70,8 @@ instance where you do it. To see that it actually refreshes, let's modify
 the counter every 3 seconds with a simple monadic loop:
 
 
-```scala mdoc:js
+```scala
+import scala.scalajs.js.annotation.JSExportTopLevel
 import slinky.web.ReactDOM
 import cats.effect.{IO, IOApp}
 import org.scalajs.dom.document
@@ -74,7 +93,11 @@ object TestCurrent extends IOApp {
       _    <- IO { ReactDOM.render(Connector(alg)(CurrentCount()), node) }
       _    <- updateCount(alg).start
     } yield ()
-  } >> IO.never
+  } >> IO.never // JS apps don't terminate normally
+  
+  // You will probably need this for webpack runner to run the app
+  @JSExportTopLevel("main")
+  def main(): Unit = super.main(Array())
 }
 ```
 
@@ -140,7 +163,7 @@ class NamedCounter[F[_]: Concurrent: Timer](dsl: StoreDSL[F]) {
 We'll need a new connector for this algebra, too:
 
 ```scala mdoc:js:shared
-object NameCountConnector extends SlinkyConnector[NamedCounter]
+object NameCountConnector extends TaglessConnector[NamedCounter]
 ```
 
 Changing state is done by performing an action. An action in shironeko
@@ -220,11 +243,11 @@ The main object doesn't change much. Since `StoreDSL` provides impure
 methods, it's constructor will return a `Resource` that will disable
 those methods once it has been used up
 
-```scala mdoc:js
+```scala
 import slinky.web.ReactDOM
 import cats.effect.{IO, IOApp}
-import scala.concurrent.duration._
 import org.scalajs.dom.document
+import scala.scalajs.js.annotation.JSExportTopLevel
 
 object TestCurrent extends IOApp {
   def run(args: List[String]) = {
@@ -240,7 +263,6 @@ object TestCurrent extends IOApp {
 ```scala mdoc:js:invisible
 import slinky.web.ReactDOM
 import cats.effect.{IO, IOApp}
-import scala.concurrent.duration._
 
 object TestCurrent extends IOApp {
   def run(args: List[String]) = {
@@ -252,3 +274,8 @@ object TestCurrent extends IOApp {
 }
 TestCurrent.main(Array())
 ```
+
+You can use containers inside other containers, as well as mix them with
+regular Slinky components as you wish. The only restriction is that
+`Connector.apply` is called higher in rendering tree than any of its'
+containers.
