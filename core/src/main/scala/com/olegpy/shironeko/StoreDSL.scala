@@ -13,6 +13,9 @@ trait StoreDSL[F[_]] {
 }
 
 object StoreDSL {
+  def run[F[_]: Concurrent, A](f: StoreDSL[F] => A): F[A] =
+    apply[F].use(dsl => Sync[F].delay(f(dsl)))
+
   def apply[F[_]: Concurrent]: Resource[F, StoreDSL[F]] = Resource {
     Sync[F].delay {
       var isDone = false
