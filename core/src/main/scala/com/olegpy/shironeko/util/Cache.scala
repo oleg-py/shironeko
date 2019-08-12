@@ -17,7 +17,7 @@ class Cache {
     map.get(id) match {
       case Some(value) if value.deps == deps =>
         value.get.asInstanceOf[A]
-      case None =>
+      case _ =>
         val result = a
         map.update(id, Cache.Val(result, deps))
         result
