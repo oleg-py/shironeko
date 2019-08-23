@@ -7,8 +7,11 @@ import slinky.core.{KeyAddingStage}
 import slinky.core.facade.{ReactElement}
 
 
-class DirectConnector[F[_], Algebra] {
-  private[this] object Underlying extends TaglessConnector[λ[f[_] => Algebra]]
+class DirectConnector[F[_], Algebra] { self =>
+  def reportUncaughtException(e: Throwable): Unit = e.printStackTrace()
+  private[this] object Underlying extends TaglessConnector[λ[f[_] => Algebra]] {
+    override def reportUncaughtException(e: Throwable): Unit = self.reportUncaughtException(e)
+  }
 
   def apply(elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra): ReactElement =
     Underlying(elem)(F, store)

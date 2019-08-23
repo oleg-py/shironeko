@@ -8,6 +8,8 @@ import com.olegpy.shironeko.interop.Exec
 
 
 class TaglessConnector[Algebra[_[_]]] { conn =>
+  def reportUncaughtException(e: Throwable): Unit = e.printStackTrace()
+
   // We use an "unknown" erased type to represent whatever the algebra is used with
   private[shironeko] type Z[_]
 
@@ -72,6 +74,12 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
       val (storeState, setStoreState) = Hooks.useState(none[State[Z]])
 
       var actualState = storeState
+      def unsafeRunWithReport (effect: Z[Unit]) = {
+        F.runCancelable(effect) {
+          case Left(ex) => IO(reportUncaughtException(ex))
+          case Right(value) => IO.pure(value)
+        }.unsafeRunSync()
+      }
       val token: Z[Unit] = Hooks.useMemo(() => {
         // This part is expected to run synchronously if possible to avoid extra flashing
         // That is true for monix w/ default config and cats IO if used with fs2 Signals
@@ -85,12 +93,12 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
           })
           .compile.drain
 
-        F.runCancelable(effect)(IO.fromEither).unsafeRunSync()
+        unsafeRunWithReport(effect)
       }, Seq())
 
       rendered.current = true
       Hooks.useEffect(() => {
-        () => F.runCancelable(token)(IO.fromEither).unsafeRunSync()
+        () => unsafeRunWithReport(token)
       }, Seq())
       actualState.map(state => render[Z](state, props))
     } }

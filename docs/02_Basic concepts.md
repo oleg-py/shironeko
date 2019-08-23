@@ -146,6 +146,62 @@ However, DSL is optional. If it irks you, don't use it.
 ### Connector
 
 Connector is a special object that links your store to React.
+It provides a number of internal classes for you to extend in order
+to create a _container_ component (see section below).
+
+Recommended usage is to just have a global object:
+```scala
+object Connector extends DirectConnector[IO, Store]
+```
+
+or, in tagless style:
+
+```scala
+object Connector extends TaglessConnector[StoreF]
+```
+
+There's one method you might want to override:
+```scala
+def reportUncaughtException(e: Throwable): Unit
+```
+
+Actually _using_ a connector requires `ConcurrentEffect` instance for
+your effect type. The easiest option is to wire everything up in main
+of `IOApp` or similar type, where this instance should be available.
+
+A store needs to be supplied to use a connector, either explicitly:
+
+```scala
+ReactDOM.render(Connector(store)(Routes()), domElement)
+```
+
+or as an implicit:
+
+```scala
+implicit val s: Store = store
+ReactDOM.render(Connector(Routes()), domElement)
+```
+
+Connector needs to be higher in rendering tree, otherwise an exception
+will be raised. You only need to use it once per store, however.
+
+```scala
+// Valid, recommended
+Connector(Routes())
+// Valid, recommended
+Connector(div(Routes(), Routes()))
+
+// Valid, but not recommended
+div(
+  Connector(Routes()),
+  Connector(Routes())
+)
+// Broken
+div(
+  Connector(Routes()),
+  Routes()
+)
+```
 
 ### Container
 
