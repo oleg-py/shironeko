@@ -1,7 +1,113 @@
-<html><head><title>Shironeko: Misc. utilities</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Oleg Pyzhcov" /><meta name="description" content="shironeko" /><meta name="og:image" content="/shironeko/img/poster.png" /><meta name="image" property="og:image" content="/shironeko/img/poster.png" /><meta name="og:title" content="Shironeko: Misc. utilities" /><meta name="title" property="og:title" content="Shironeko: Misc. utilities" /><meta name="og:site_name" content="Shironeko" /><meta name="og:url" content="http://github.com/oleg-py/shironeko" /><meta name="og:type" content="website" /><meta name="og:description" content="shironeko" /><link rel="icon" type="image/png" href="/shironeko/img/favicon.png" /><meta name="twitter:title" content="Shironeko: Misc. utilities" /><meta name="twitter:image" content="/shironeko/img/poster.png" /><meta name="twitter:description" content="shironeko" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/shironeko/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/shironeko/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/shironeko/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/shironeko/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/shironeko/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/shironeko/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/shironeko/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/shironeko/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/shironeko/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/shironeko/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/shironeko/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/shironeko/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/shironeko/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/shironeko/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/shironeko/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/shironeko/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/shironeko/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/shironeko/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/shironeko/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/shironeko/img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/shironeko/highlight/styles/default.css" /><link rel="stylesheet" href="/shironeko/css/style.css" /><link rel="stylesheet" href="/shironeko/css/palette.css" /><link rel="stylesheet" href="/shironeko/css/codemirror.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/shironeko/" class="brand"><div class="brand-wrapper"><span>Shironeko</span></div></a></li> <li><a href="/shironeko/01_Quickstart.html" class="">Quickstart</a></li> <li><a href="/shironeko/02_Basic concepts.html" class="">Basic concepts</a></li> <li><a href="/shironeko/03_Choosing style.html" class="">Choosing style</a></li> <li><a href="/shironeko/04_Utilities.html" class=" active ">Misc. utilities</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('Shironeko shironeko');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('Shironeko shironeko');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="oleg-py" data-github-repo="shironeko"><div class="content-wrapper"><section><div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="mi">1</span>
-<span class="c1">// x: Int = 1
-</span></code></pre></div></div>
+<html><head><title>Shironeko: Misc. utilities</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Oleg Pyzhcov" /><meta name="description" content="shironeko" /><meta name="og:image" content="/shironeko/img/poster.png" /><meta name="image" property="og:image" content="/shironeko/img/poster.png" /><meta name="og:title" content="Shironeko: Misc. utilities" /><meta name="title" property="og:title" content="Shironeko: Misc. utilities" /><meta name="og:site_name" content="Shironeko" /><meta name="og:url" content="http://github.com/oleg-py/shironeko" /><meta name="og:type" content="website" /><meta name="og:description" content="shironeko" /><link rel="icon" type="image/png" href="/shironeko/img/favicon.png" /><meta name="twitter:title" content="Shironeko: Misc. utilities" /><meta name="twitter:image" content="/shironeko/img/poster.png" /><meta name="twitter:description" content="shironeko" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/shironeko/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/shironeko/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/shironeko/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/shironeko/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/shironeko/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/shironeko/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/shironeko/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/shironeko/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/shironeko/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/shironeko/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/shironeko/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/shironeko/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/shironeko/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/shironeko/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/shironeko/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/shironeko/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/shironeko/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/shironeko/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/shironeko/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/shironeko/img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/shironeko/highlight/styles/default.css" /><link rel="stylesheet" href="/shironeko/css/style.css" /><link rel="stylesheet" href="/shironeko/css/palette.css" /><link rel="stylesheet" href="/shironeko/css/codemirror.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/shironeko/" class="brand"><div class="brand-wrapper"><span>Shironeko</span></div></a></li> <li><a href="/shironeko/01_Quickstart.html" class="">Quickstart</a></li> <li><a href="/shironeko/02_Basic concepts.html" class="">Basic concepts</a></li> <li><a href="/shironeko/03_Choosing style.html" class="">Choosing style</a></li> <li><a href="/shironeko/04_Utilities.html" class=" active ">Misc. utilities</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('Shironeko shironeko');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('Shironeko shironeko');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="oleg-py" data-github-repo="shironeko"><div class="content-wrapper"><section><h2 id="combine---parallel-merging-of-fs2streams"><code class="highlighter-rouge">combine</code> - parallel merging of fs2.Streams</h2>
 
+<p><code class="highlighter-rouge">combine</code> takes a name of class, which companion has apply
+method (e.g. tuple or case class) and builds a stream of values
+of this class, built from the most recent values of each stream.</p>
+
+<p>This is done by converting all streams to <code class="highlighter-rouge">Signal</code> using <code class="highlighter-rouge">holdOption</code>,
+merging them using <code class="highlighter-rouge">Applicative[Signal]</code> which does parallel joining,
+removing all <code class="highlighter-rouge">None</code> values and mapping the resulting output. The method
+itself is a varargs blackbox macro, allowing for any arity of
+constructor function, and is based on <code class="highlighter-rouge">withLatestFrom</code> in various Rx
+libraries.</p>
+
+<p>The call looks like this:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">case</span> <span class="k">class</span> <span class="nc">State</span><span class="o">(</span><span class="n">timestamp</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">count</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">states</span> <span class="k">=</span>
+  <span class="n">combine</span><span class="o">[</span><span class="kt">State</span><span class="o">].</span><span class="n">from</span><span class="o">(</span>
+      <span class="c1">// ^ --- ^ type parameter is mandatory there
+</span>    <span class="n">stream1</span><span class="o">,</span> <span class="c1">// &lt;- streams will be checked to match expected param type
+</span>    <span class="n">stream2</span><span class="o">,</span> <span class="c1">//    after macro expansion
+</span>    <span class="n">stream3</span>
+  <span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="shift---using-hooks-in-any-react-component"><code class="highlighter-rouge">shift</code> - using hooks in any React component</h2>
+
+<p>React hooks cannot be used with regular class-based components, and
+separating parts of state or using regular context API can be annoying.
+Shironeko Containers also have no place to specify an extra local state,
+which might be desirable in several scenarios.</p>
+
+<p>Shift is a simple functional component that takes a (by-name) body
+and renders it directly. This body, however, might use any hooks. This
+can be used in containers, or in plain class-based components, e.g.
+in this class from todo-mvc example:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@react</span> <span class="k">class</span> <span class="nc">NewTodoInput</span> <span class="k">extends</span> <span class="nc">StatelessComponent</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">class</span> <span class="nc">Props</span><span class="o">(</span><span class="n">onCommit</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">render</span><span class="o">()</span><span class="k">:</span> <span class="kt">ReactElement</span> <span class="o">=</span> <span class="n">shift</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="o">(</span><span class="n">text</span><span class="o">,</span> <span class="n">setText</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Hooks</span><span class="o">.</span><span class="n">useState</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+    <span class="n">input</span><span class="o">(</span>
+      <span class="n">className</span> <span class="o">:=</span> <span class="s">"new-todo"</span><span class="o">,</span>
+      <span class="n">placeholder</span> <span class="o">:=</span> <span class="s">"What needs to be done?"</span><span class="o">,</span>
+      <span class="n">autoFocus</span> <span class="o">:=</span> <span class="kc">true</span><span class="o">,</span>
+      <span class="n">value</span> <span class="o">:=</span> <span class="n">text</span><span class="o">,</span>
+      <span class="n">onChange</span> <span class="o">:=</span> <span class="o">{</span> <span class="n">e</span> <span class="k">=&gt;</span> <span class="n">setText</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span><span class="o">)</span> <span class="o">},</span>
+      <span class="n">onKeyPress</span> <span class="o">:=</span> <span class="o">{</span> <span class="n">e</span> <span class="k">=&gt;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s">"Enter"</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">props</span><span class="o">.</span><span class="n">onCommit</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+          <span class="n">setText</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="cache---low-boilerplate-cache-for-reducing-allocations"><code class="highlighter-rouge">Cache</code> - low-boilerplate cache for reducing allocations</h2>
+
+<p><code class="highlighter-rouge">Cache</code> is a macro-based polymorphic cache. It uses
+call position in the code as a primary key.</p>
+
+<!--TODO check inference-->
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Foo</span> <span class="k">extends</span> <span class="nc">StatelessComponent</span> <span class="o">{</span> 
+  <span class="k">type</span> <span class="kt">Props</span> <span class="o">=</span> <span class="nc">Unit</span>
+  <span class="k">private</span> <span class="k">val</span> <span class="n">cache</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Cache</span>
+  
+  <span class="k">def</span> <span class="n">render</span><span class="k">:</span> <span class="kt">ReactElement</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">div</span><span class="o">(</span>
+      <span class="n">onMouseEnter</span> <span class="o">:=</span> <span class="n">cache</span> <span class="o">{</span> <span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"Hovered"</span><span class="o">)</span> <span class="o">},</span>
+      <span class="n">onClick</span> <span class="o">:=</span> <span class="n">cache</span> <span class="o">{</span> <span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"Clicked"</span><span class="o">)</span> <span class="o">}</span>
+    <span class="o">)(</span><span class="n">cache</span><span class="o">(</span><span class="s">"Click me!"</span><span class="o">))</span> <span class="c1">// not useful here
+</span>  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Its primary purpose is to avoid allocating lambdas in <code class="highlighter-rouge">render</code>
+method, but it can be used for anything else (it might be confusing
+though).</p>
+
+<p>It also has support for adding a key and a list of dependencies to
+watch. You must use key in loops, and add any values your lambda
+captures that are subject to change to a dependency list</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Foo</span> <span class="k">extends</span> <span class="nc">StatelessComponent</span> <span class="o">{</span> 
+  <span class="k">type</span> <span class="kt">Props</span> <span class="o">=</span> <span class="nc">Int</span>
+  <span class="k">private</span> <span class="k">val</span> <span class="n">cache</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Cache</span>
+  
+  <span class="k">def</span> <span class="n">render</span><span class="k">:</span> <span class="kt">ReactElement</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">displayValue</span> <span class="k">=</span> <span class="n">props</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">div</span><span class="o">(</span>
+      <span class="nc">List</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">,</span> <span class="s">"baz"</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span> <span class="n">s</span> <span class="k">=&gt;</span>
+        <span class="c1">// cache different funcs for the same position
+</span>        <span class="n">div</span><span class="o">(</span><span class="n">onClick</span> <span class="o">:=</span> <span class="n">cache</span><span class="o">(</span><span class="n">s</span><span class="o">)(()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="o">)))</span>
+      <span class="o">},</span>
+      <span class="n">div</span><span class="o">(</span><span class="n">onClick</span> <span class="o">:=</span> <span class="n">cache</span><span class="o">.</span><span class="n">dependent</span><span class="o">(</span><span class="s">"clicker"</span><span class="o">,</span> <span class="nc">Seq</span><span class="o">(</span><span class="n">displayValue</span><span class="o">))</span> <span class="o">{</span> <span class="o">()</span> <span class="k">=&gt;</span>
+        <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"Current value is $displayValue"</span><span class="o">)</span>
+      <span class="o">})(</span><span class="n">displayValue</span><span class="o">)</span>
+    <span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Note that if you’re caching a lambda, you don’t need to add <code class="highlighter-rouge">state</code> or
+<code class="highlighter-rouge">props</code> as dependencies in Slinky, as those are methods and will always
+resolve to most recent state.</p>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/shironeko/highlight/highlight.pack.js"></script><script>hljs.configure({languages:['scala','java','bash']});
 hljs.initHighlighting();
               </script><script src="/shironeko/js/main.js"></script></body></html>

@@ -1,7 +1,329 @@
-<html><head><title>Shironeko: Basic concepts</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Oleg Pyzhcov" /><meta name="description" content="shironeko" /><meta name="og:image" content="/shironeko/img/poster.png" /><meta name="image" property="og:image" content="/shironeko/img/poster.png" /><meta name="og:title" content="Shironeko: Basic concepts" /><meta name="title" property="og:title" content="Shironeko: Basic concepts" /><meta name="og:site_name" content="Shironeko" /><meta name="og:url" content="http://github.com/oleg-py/shironeko" /><meta name="og:type" content="website" /><meta name="og:description" content="shironeko" /><link rel="icon" type="image/png" href="/shironeko/img/favicon.png" /><meta name="twitter:title" content="Shironeko: Basic concepts" /><meta name="twitter:image" content="/shironeko/img/poster.png" /><meta name="twitter:description" content="shironeko" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/shironeko/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/shironeko/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/shironeko/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/shironeko/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/shironeko/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/shironeko/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/shironeko/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/shironeko/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/shironeko/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/shironeko/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/shironeko/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/shironeko/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/shironeko/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/shironeko/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/shironeko/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/shironeko/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/shironeko/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/shironeko/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/shironeko/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/shironeko/img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/shironeko/highlight/styles/default.css" /><link rel="stylesheet" href="/shironeko/css/style.css" /><link rel="stylesheet" href="/shironeko/css/palette.css" /><link rel="stylesheet" href="/shironeko/css/codemirror.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/shironeko/" class="brand"><div class="brand-wrapper"><span>Shironeko</span></div></a></li> <li><a href="/shironeko/01_Quickstart.html" class="">Quickstart</a></li> <li><a href="/shironeko/02_Basic concepts.html" class=" active ">Basic concepts</a></li> <li><a href="/shironeko/03_Choosing style.html" class="">Choosing style</a></li> <li><a href="/shironeko/04_Utilities.html" class="">Misc. utilities</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('Shironeko shironeko');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('Shironeko shironeko');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="oleg-py" data-github-repo="shironeko"><div class="content-wrapper"><section><div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="mi">1</span>
-<span class="c1">// x: Int = 1
-</span></code></pre></div></div>
+<html><head><title>Shironeko: Basic concepts</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Oleg Pyzhcov" /><meta name="description" content="shironeko" /><meta name="og:image" content="/shironeko/img/poster.png" /><meta name="image" property="og:image" content="/shironeko/img/poster.png" /><meta name="og:title" content="Shironeko: Basic concepts" /><meta name="title" property="og:title" content="Shironeko: Basic concepts" /><meta name="og:site_name" content="Shironeko" /><meta name="og:url" content="http://github.com/oleg-py/shironeko" /><meta name="og:type" content="website" /><meta name="og:description" content="shironeko" /><link rel="icon" type="image/png" href="/shironeko/img/favicon.png" /><meta name="twitter:title" content="Shironeko: Basic concepts" /><meta name="twitter:image" content="/shironeko/img/poster.png" /><meta name="twitter:description" content="shironeko" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/shironeko/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/shironeko/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/shironeko/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/shironeko/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/shironeko/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/shironeko/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/shironeko/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/shironeko/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/shironeko/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/shironeko/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/shironeko/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/shironeko/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/shironeko/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/shironeko/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/shironeko/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/shironeko/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/shironeko/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/shironeko/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/shironeko/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/shironeko/img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/shironeko/highlight/styles/default.css" /><link rel="stylesheet" href="/shironeko/css/style.css" /><link rel="stylesheet" href="/shironeko/css/palette.css" /><link rel="stylesheet" href="/shironeko/css/codemirror.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/shironeko/" class="brand"><div class="brand-wrapper"><span>Shironeko</span></div></a></li> <li><a href="/shironeko/01_Quickstart.html" class="">Quickstart</a></li> <li><a href="/shironeko/02_Basic concepts.html" class=" active ">Basic concepts</a></li> <li><a href="/shironeko/03_Choosing style.html" class="">Choosing style</a></li> <li><a href="/shironeko/04_Utilities.html" class="">Misc. utilities</a></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/oleg-py/shironeko"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('Shironeko shironeko');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('Shironeko shironeko');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="oleg-py" data-github-repo="shironeko"><div class="content-wrapper"><section><h3 id="actions">Actions</h3>
 
+<p>Actions represent what needs to be done in response to something
+happening in your application.</p>
+
+<p>Unlike libraries like Redux, where “actions” are plain data to be
+interpreted by some other entity, Shironeko uses cats-effect compatible
+type that can execute literally anything. This is a lot of freedom, and
+you lose some perks of plain data model, but there are benefits:</p>
+
+<h4 id="pure-fp">Pure FP</h4>
+
+<h4 id="composition--asynchrony-are-baked-in">Composition &amp; asynchrony are baked in</h4>
+
+<p>Async computations, such as AJAX requests, are bread and butter of
+frontend applications. With Shironeko, you can combine multiple requests
+in one go with familiar operators:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="n">doThingA</span><span class="k">:</span> <span class="kt">F</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">???</span>
+<span class="k">val</span> <span class="n">doThingB</span><span class="k">:</span> <span class="kt">F</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">???</span>
+
+<span class="k">val</span> <span class="n">doBothThingsSequentially</span> <span class="k">=</span> <span class="n">doThingA</span> <span class="o">&gt;&gt;</span> <span class="n">doThingB</span>
+<span class="k">val</span> <span class="n">doBothThingsInParallel</span>   <span class="k">=</span> <span class="n">doThingA</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;&gt;</span> <span class="n">doThingB</span>
+</code></pre></div></div>
+
+<p>No middleware is required, no extra types to learn and you can use
+any cats-effect compatible library (e.g. sttp or Hammock for AJAX) out
+of the box.</p>
+
+<h4 id="no-boilerplate-simple-model">No boilerplate, simple model</h4>
+
+<ul>
+  <li>You write things you want to run</li>
+  <li>You run those things by triggers in your UI/timers/etc.</li>
+</ul>
+
+<p>There are no special classes to extend, no complicated machinery of what
+needs to do what. Code reuse is achieved with regular techniques, such
+as extracting a method, and you can always return an intermediate value
+as <code class="highlighter-rouge">F[A]</code> if you need to use results somehow.</p>
+
+<h3 id="streams">Streams</h3>
+
+<p>Shironeko-specific components can update themselves based on data
+coming in any <code class="highlighter-rouge">fs2.Stream</code>.</p>
+
+<p>If you are not familiar with fs2, it’s similar to evaluating some
+effectful potentially async computation (driven by <code class="highlighter-rouge">F</code>, stream’s first
+type parameter) and giving you all intermediate results as soon as you
+can process them (of type <code class="highlighter-rouge">A</code>, second type parameter). Async
+computations doesn’t actually mean that you’d be sending requests left
+and right, it can be as simple as waiting for some value to change.</p>
+
+<p>While not needed for basic use of Shironeko, streams come with many
+combinators, e.g.</p>
+<ul>
+  <li>You can strip and/or transform data coming to you with <code class="highlighter-rouge">map</code> and
+<code class="highlighter-rouge">evalMap</code></li>
+  <li>You can optimize away unwanted updates with <code class="highlighter-rouge">.filter</code> or <code class="highlighter-rouge">.distinct</code></li>
+  <li>You can reduce the frequency of updates with <code class="highlighter-rouge">.debounce</code>*</li>
+  <li>You can use <code class="highlighter-rouge">Stream.resource(..)</code> to have a mount/unmount lifecycle
+hook, and <code class="highlighter-rouge">evalTap</code> to get an update hook.</li>
+  <li>You can create a simple timed update with <code class="highlighter-rouge">Stream.awakeEvery</code>.*</li>
+</ul>
+
+<p>* - you need your algebra to provide a Timer, or use type like Monix
+Task which always has it</p>
+
+<h3 id="state-cells">State cells</h3>
+
+<p>State cells is where your application state is stored, and can be
+changed or observed by React. Shironeko uses <code class="highlighter-rouge">SignallingRef[F, A]</code> from
+<code class="highlighter-rouge">fs2</code>, which gives you mutation API of <code class="highlighter-rouge">Ref</code> and ability to observe
+writes as <code class="highlighter-rouge">fs2.Stream</code> by calling it’s <code class="highlighter-rouge">.discrete</code> method.</p>
+
+<h3 id="store">Store</h3>
+
+<p>Store is an object, or a tagless algebra in tagless style, which
+contains data you want to be manipuating (displaying and modifying).</p>
+
+<p>There’s no base class or anything like that, however, tagless style
+requires a single “hole” for the type constructor in the type, i.e.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Store[F[_]] // &lt;- like this, a.k.a. kind (* -&gt; *) -&gt; *
+</code></pre></div></div>
+
+<h4 id="dsl">DSL</h4>
+
+<p>To simplify definition of multiple state cells, Shironeko provides a
+small DSL.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Store</span><span class="o">(</span><span class="n">dsl</span><span class="k">:</span> <span class="kt">StoreDSL</span><span class="o">[</span><span class="kt">IO</span><span class="o">])</span> <span class="o">{</span>
+  <span class="k">import</span> <span class="nn">dsl._</span>
+  
+  <span class="c1">// Constructing state cells
+</span>  <span class="k">val</span> <span class="n">counter</span> <span class="k">=</span> <span class="n">cell</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+  <span class="k">val</span> <span class="n">name</span>    <span class="k">=</span> <span class="n">cell</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+  
+  <span class="c1">// event streams
+</span>  <span class="k">val</span> <span class="n">updates</span> <span class="k">=</span> <span class="n">events</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  
+  <span class="c1">// and also plain Refs, for things you don't want to show
+</span>  <span class="k">val</span> <span class="n">hiddenState</span> <span class="k">=</span> <span class="n">ref</span><span class="o">(</span><span class="nc">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]())</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">Store</span> <span class="o">{</span>
+  <span class="c1">// `construct` is a factory method
+</span>  <span class="c1">// TODO CHECK INFERENCE HERE
+</span>  <span class="k">def</span> <span class="n">make</span><span class="k">:</span> <span class="kt">IO</span><span class="o">[</span><span class="kt">Store</span><span class="o">]</span> <span class="k">=</span> <span class="nc">StoreDSL</span><span class="o">.</span><span class="n">run</span><span class="o">(</span><span class="k">new</span> <span class="nc">Store</span><span class="o">(</span><span class="k">_</span><span class="o">))</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>DSL is deliberately not referentially transparent - conventional
+alternative is more boilerplatey:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Store</span> <span class="o">(</span>
+  <span class="k">val</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">Cell</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">Int</span><span class="o">],</span>
+  <span class="k">val</span> <span class="n">name</span><span class="k">:</span>    <span class="kt">Cell</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">String</span><span class="o">],</span>
+  <span class="k">val</span> <span class="n">updates</span><span class="k">:</span> <span class="kt">Events</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">String</span><span class="o">],</span>
+  <span class="k">val</span> <span class="n">hiddenState</span><span class="k">:</span> <span class="kt">Ref</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span>
+<span class="o">)</span>
+
+<span class="k">object</span> <span class="nc">Store</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">make</span><span class="k">:</span> <span class="kt">IO</span><span class="o">[</span><span class="kt">Store</span><span class="o">]</span> <span class="k">=</span>
+    <span class="o">(</span><span class="nc">Cell</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">Int</span><span class="o">](</span><span class="mi">0</span><span class="o">),</span> <span class="nc">Cell</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">String</span><span class="o">](</span><span class="s">""</span><span class="o">),</span> <span class="nc">Events</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">String</span><span class="o">],</span> <span class="nc">Ref</span><span class="o">[</span><span class="kt">IO</span><span class="o">].</span><span class="n">of</span><span class="o">(</span><span class="nc">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]()))</span>
+      <span class="o">.</span><span class="n">mapN</span><span class="o">(</span><span class="k">new</span> <span class="nc">Store</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>It makes it harder to do modifications such as introducing / removing new
+cells, and with types more complex than Int/String, duplication becomes
+quite significant.</p>
+
+<p>DSL is also protected in a way that you only can use it once, while
+the object is being constructed. E.g. doing something like this</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">mkExtraCell</span> <span class="k">=</span> <span class="n">cell</span><span class="o">(</span><span class="mi">50</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>will fail at runtime. Same for <code class="highlighter-rouge">lazy val</code> and fields in <code class="highlighter-rouge">object</code>s (these
+need to be triggered manually)</p>
+
+<p>However, DSL is optional. If it irks you, don’t use it.</p>
+
+<h3 id="connector">Connector</h3>
+
+<p>Connector is a special object that links your store to React.
+It provides a number of internal classes for you to extend in order
+to create a <em>container</em> component (see section below).</p>
+
+<p>Recommended usage is to just have a global object:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">Connector</span> <span class="k">extends</span> <span class="nc">DirectConnector</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">Store</span><span class="o">]</span>
+</code></pre></div></div>
+
+<p>or, in tagless style:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">Connector</span> <span class="k">extends</span> <span class="nc">TaglessConnector</span><span class="o">[</span><span class="kt">StoreF</span><span class="o">]</span>
+</code></pre></div></div>
+
+<p>There’s one method you might want to override:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">reportUncaughtException</span><span class="o">(</span><span class="n">e</span><span class="k">:</span> <span class="kt">Throwable</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+</code></pre></div></div>
+
+<p>Actually <em>using</em> a connector requires <code class="highlighter-rouge">ConcurrentEffect</code> instance for
+your effect type. The easiest option is to wire everything up in main
+of <code class="highlighter-rouge">IOApp</code> or similar type, where this instance should be available.</p>
+
+<p>A store needs to be supplied to use a connector, either explicitly:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ReactDOM</span><span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="nc">Connector</span><span class="o">(</span><span class="n">store</span><span class="o">)(</span><span class="nc">Routes</span><span class="o">()),</span> <span class="n">domElement</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>or as an implicit:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">implicit</span> <span class="k">val</span> <span class="n">s</span><span class="k">:</span> <span class="kt">Store</span> <span class="o">=</span> <span class="n">store</span>
+<span class="nc">ReactDOM</span><span class="o">.</span><span class="n">render</span><span class="o">(</span><span class="nc">Connector</span><span class="o">(</span><span class="nc">Routes</span><span class="o">()),</span> <span class="n">domElement</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>Connector needs to be higher in rendering tree, otherwise an exception
+will be raised. You only need to use it once per store, however.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Valid, recommended
+</span><span class="nc">Connector</span><span class="o">(</span><span class="nc">Routes</span><span class="o">())</span>
+<span class="c1">// Valid, recommended
+</span><span class="nc">Connector</span><span class="o">(</span><span class="n">div</span><span class="o">(</span><span class="nc">Routes</span><span class="o">(),</span> <span class="nc">Routes</span><span class="o">()))</span>
+
+<span class="c1">// Valid, but not recommended
+</span><span class="n">div</span><span class="o">(</span>
+  <span class="nc">Connector</span><span class="o">(</span><span class="nc">Routes</span><span class="o">()),</span>
+  <span class="nc">Connector</span><span class="o">(</span><span class="nc">Routes</span><span class="o">())</span>
+<span class="o">)</span>
+<span class="c1">// Broken
+</span><span class="n">div</span><span class="o">(</span>
+  <span class="nc">Connector</span><span class="o">(</span><span class="nc">Routes</span><span class="o">()),</span>
+  <span class="nc">Routes</span><span class="o">()</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="container">Container</h3>
+
+<p>Container is a special component tied to a certain connector. It’s
+very similar to a react component, except it:</p>
+
+<ul>
+  <li>gets its State updates from fs2 Stream instead of managing it internally</li>
+  <li>can dispatch actions (of type <code class="highlighter-rouge">F[Unit]</code>)</li>
+</ul>
+
+<p>Containers are bridges between your pure logic and plain Slinky/React
+components. When extending a <code class="highlighter-rouge">Connector.Container</code>, you need to specify
+two types (<code class="highlighter-rouge">State</code> and <code class="highlighter-rouge">Props</code>) and implement two methods:</p>
+<ul>
+  <li><code class="highlighter-rouge">subscribe</code>, which generates a stream of States that will be passed
+down to <code class="highlighter-rouge">render</code></li>
+  <li><code class="highlighter-rouge">render</code>, which converts state and props to Slinky/React DOM tree</li>
+</ul>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">StateDisplay</span> <span class="k">extends</span> <span class="nc">ConnectorF</span><span class="o">.</span><span class="nc">Container</span> <span class="o">{</span>
+  <span class="k">type</span> <span class="kt">Props</span> <span class="o">=</span> <span class="nc">Int</span>
+  <span class="k">type</span> <span class="kt">State</span> <span class="o">=</span> <span class="nc">String</span>
+  
+  <span class="k">def</span> <span class="n">subscribe</span><span class="o">[</span><span class="kt">F</span><span class="o">[</span><span class="k">_</span><span class="o">]</span><span class="kt">:</span> <span class="kt">Subscribe</span><span class="o">]</span><span class="k">:</span> <span class="kt">fs2.Stream</span><span class="o">[</span><span class="kt">F</span>, <span class="kt">State</span><span class="o">]</span> <span class="k">=</span>
+    <span class="n">implicitly</span><span class="o">[</span><span class="kt">StoreF</span><span class="o">[</span><span class="kt">F</span><span class="o">]].</span><span class="n">name</span><span class="o">.</span><span class="n">discrete</span>
+    
+  <span class="k">def</span> <span class="n">render</span><span class="o">[</span><span class="kt">F</span><span class="o">[</span><span class="k">_</span><span class="o">]</span><span class="kt">:</span> <span class="kt">Render</span><span class="o">](</span><span class="n">state</span><span class="k">:</span> <span class="kt">State</span><span class="o">,</span> <span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">)</span><span class="k">:</span> <span class="kt">ReactElement</span> <span class="o">=</span>
+    <span class="n">div</span><span class="o">(</span><span class="n">s</span><span class="s">"props = $props, state = $state"</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">render</code> method is similar to one you use in Slinky, however, state and
+props are passed as parameters, instead of being available as fields on
+<code class="highlighter-rouge">this</code>.</p>
+
+<p><code class="highlighter-rouge">subscribe</code> can return any Stream of what you defined your <code class="highlighter-rouge">State</code> as,
+including time-based, or fixed constant values. Most commonly you
+will use a combination of state cells from your store algebra,
+by calling <code class="highlighter-rouge">.discrete</code>, possibly stripping away unnecessary information
+with <code class="highlighter-rouge">map</code> and/or some additional optimization (e.g. <code class="highlighter-rouge">.distinct</code>, <code class="highlighter-rouge">.debounce</code>)</p>
+
+<p><code class="highlighter-rouge">Subscribe</code> typeclass, that is available in <code class="highlighter-rouge">subscribe</code> method, is
+equivalent to having <code class="highlighter-rouge">Concurrent[F]</code> and <code class="highlighter-rouge">Store[F]</code> in scope.
+<code class="highlighter-rouge">Render</code> is equivalent to having <code class="highlighter-rouge">Subscribe[F]</code> plus a limited version of
+<code class="highlighter-rouge">ConcurrentEffect[F]</code> (called <code class="highlighter-rouge">Exec</code>), which only allows to run actions
+without receiving any feedback.</p>
+
+<p>This restriction only exists in tagless version. Direct version is
+simpler:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">StateDisplay</span> <span class="k">extends</span> <span class="nc">Connector</span><span class="o">.</span><span class="nc">Container</span> <span class="o">{</span>
+  <span class="k">type</span> <span class="kt">Props</span> <span class="o">=</span> <span class="nc">Int</span>
+  <span class="k">type</span> <span class="kt">State</span> <span class="o">=</span> <span class="nc">String</span>
+  
+  <span class="k">def</span> <span class="n">subscribe</span><span class="k">:</span> <span class="kt">fs2.Stream</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">State</span><span class="o">]</span> <span class="k">=</span>
+    <span class="n">implicitly</span><span class="o">[</span><span class="kt">Store</span><span class="o">].</span><span class="n">name</span><span class="o">.</span><span class="n">discrete</span>
+    
+  <span class="k">def</span> <span class="n">render</span><span class="o">(</span><span class="n">state</span><span class="k">:</span> <span class="kt">State</span><span class="o">,</span> <span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">)</span><span class="k">:</span> <span class="kt">ReactElement</span> <span class="o">=</span>
+    <span class="n">div</span><span class="o">(</span><span class="n">s</span><span class="s">"props = $props, state = $state"</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Concurrent</code> and <code class="highlighter-rouge">Exec</code> instances are still available in whole
+container’s body. That means, you don’t need e.g. <code class="highlighter-rouge">ContextShift[IO]</code> to
+fork fibers, or monix <code class="highlighter-rouge">Scheduler</code> to run <code class="highlighter-rouge">Task</code>s.</p>
+
+<p>Finally, there are several base classes in each <code class="highlighter-rouge">Connector</code>:</p>
+<ul>
+  <li><code class="highlighter-rouge">Container</code> has both State and Props</li>
+  <li><code class="highlighter-rouge">ContainerNoProps</code> has State only. Best fit for top-level containers</li>
+  <li><code class="highlighter-rouge">ContainerNoState</code> has Props only. Useful when you only want to dispatch
+actions</li>
+</ul>
+
+<p>The signature of <code class="highlighter-rouge">render</code> in <code class="highlighter-rouge">NoXX</code> variants have been adjusted
+accordingly, and you can’t implement <code class="highlighter-rouge">subscribe</code> in <code class="highlighter-rouge">ContainerNoState</code></p>
+
+<p>Tagless version also provides additional variants:</p>
+<ul>
+  <li><code class="highlighter-rouge">ContainerF</code></li>
+  <li><code class="highlighter-rouge">ContainerFNoProps</code></li>
+</ul>
+
+<p>For both of them, you have to implement <code class="highlighter-rouge">type State[F[_]]</code> instead of
+paramenterless <code class="highlighter-rouge">type State</code>. They are occasionally useful if you want to
+keep some kind of action around to attach as a callback.</p>
+
+<p>A case class can be used to implement Props/State, and it’s the
+recommended approach. However, <code class="highlighter-rouge">subscribe</code> implementation becomes tricky:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">object</span> <span class="nc">StateDisplay</span> <span class="k">extends</span> <span class="nc">Connector</span><span class="o">.</span><span class="nc">ContainerNoProps</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">class</span> <span class="nc">State</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">count</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+  
+  <span class="k">def</span> <span class="n">subscribe</span><span class="k">:</span> <span class="kt">fs2.Stream</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">State</span><span class="o">]</span> <span class="k">=</span> 
+    <span class="n">somehowCombine</span><span class="o">(</span><span class="n">getAlgebra</span><span class="o">.</span><span class="n">count</span><span class="o">,</span> <span class="n">getAlgebra</span><span class="o">.</span><span class="n">name</span><span class="o">)</span>
+    
+  <span class="k">def</span> <span class="n">render</span><span class="o">(</span><span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">)</span><span class="k">:</span> <span class="kt">ReactElement</span> <span class="o">=</span>
+    <span class="n">div</span><span class="o">(</span><span class="n">s</span><span class="s">"props = $props, state = $state"</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>For “somehowCombine”, we want to get the most fresh values from each
+signal. This can be done using <code class="highlighter-rouge">Applicative[Signal[F, *]]</code>:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">subscribe</span><span class="k">:</span> <span class="kt">fs2.Stream</span><span class="o">[</span><span class="kt">IO</span>, <span class="kt">State</span><span class="o">]</span> <span class="k">=</span> 
+  <span class="o">(</span><span class="n">getAlgebra</span><span class="o">.</span><span class="n">count</span><span class="o">,</span> <span class="n">getAlgebra</span><span class="o">.</span><span class="n">name</span><span class="o">).</span><span class="n">mapN</span><span class="o">(</span><span class="nc">State</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">)).</span><span class="n">discrete</span>
+</code></pre></div></div>
+
+<p>Here, while we are still working with fs2 <code class="highlighter-rouge">Signal</code>, it can be done.
+However, plain fs2 Streams have nothing similar out of the box, so we
+have to convert them to Signal first with <code class="highlighter-rouge">hold</code>/<code class="highlighter-rouge">holdOption</code>.</p>
+
+<!--TODO do I want to write the code for holds impl?-->
+
+<p>Signals are also much less flexible than streams, so it’s preferable to
+work with the latter.</p>
+
+<p>Shironeko provides utility function <code class="highlighter-rouge">combine</code> for parallel combination
+of any N streams into a case class, tuple, or anything else with <code class="highlighter-rouge">.apply</code>
+method on a companion that accepts N parameters, removing the need to
+<code class="highlighter-rouge">.hold</code> things manually. It’s described in utilities section of this doc.</p>
+
+<p>(N.B. in other Rx libraries a similar in spirit operator is called
+<code class="highlighter-rouge">combineLatest</code>)</p>
+
+<!--TODO comment lifecycle-->
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/shironeko/highlight/highlight.pack.js"></script><script>hljs.configure({languages:['scala','java','bash']});
 hljs.initHighlighting();
               </script><script src="/shironeko/js/main.js"></script></body></html>
