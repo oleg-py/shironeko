@@ -20,12 +20,13 @@ The call looks like this:
 ```scala
 case class State(timestamp: String, count: Int, name: String)
 
-val states = combine[State].from(
-    // ^ --- ^ type parameter is mandatory there
-  stream1, // <- streams will be checked to match expected param type
-  stream2, //    after macro expansion
-  stream3
-)
+val states =
+  combine[State].from(
+      // ^ --- ^ type parameter is mandatory there
+    stream1, // <- streams will be checked to match expected param type
+    stream2, //    after macro expansion
+    stream3
+  )
 ```
 
 ## `shift` - using hooks in any React component
@@ -108,5 +109,6 @@ class Foo extends StatelessComponent {
   }
 }
 ```
-Note that you don't need to add `state` or `props` as dependencies in
-Slinky, as those are methods and will always resolve to most recent state.
+Note that if you're caching a lambda, you don't need to add `state` or
+`props` as dependencies in Slinky, as those are methods and will always
+resolve to most recent state.

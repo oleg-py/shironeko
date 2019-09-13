@@ -48,7 +48,7 @@ allows it.
 
 Other than that, the API/usage is very similar in two styles:
 
-```scala mdoc
+```scala
 // Algebras
 class AlgebraF[F[_]](dsl: StoreDSL[F]) {
   import dsl._

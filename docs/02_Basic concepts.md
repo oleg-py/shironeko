@@ -107,7 +107,7 @@ class Store(dsl: StoreDSL[IO]) {
 object Store {
   // `construct` is a factory method
   // TODO CHECK INFERENCE HERE
-  def make: IO[Store] = StoreDSL.construct(new Store(_))
+  def make: IO[Store] = StoreDSL.run(new Store(_))
 }
 ```
 
@@ -135,7 +135,7 @@ quite significant.
 
 DSL is also protected in a way that you only can use it once, while
 the object is being constructed. E.g. doing something like this
-```
+```scala
 def mkExtraCell = cell(50)
 ```
 will fail at runtime. Same for `lazy val` and fields in `object`s (these
@@ -205,6 +205,123 @@ div(
 
 ### Container
 
-```scala mdoc
-val x = 1
+Container is a special component tied to a certain connector. It's
+very similar to a react component, except it:
+
+ - gets its State updates from fs2 Stream instead of managing it internally
+ - can dispatch actions (of type `F[Unit]`)
+ 
+Containers are bridges between your pure logic and plain Slinky/React
+components. When extending a `Connector.Container`, you need to specify
+two types (`State` and `Props`) and implement two methods:
+ - `subscribe`, which generates a stream of States that will be passed
+  down to `render`
+ - `render`, which converts state and props to Slinky/React DOM tree
+ 
+
+```scala
+object StateDisplay extends ConnectorF.Container {
+  type Props = Int
+  type State = String
+  
+  def subscribe[F[_]: Subscribe]: fs2.Stream[F, State] =
+    implicitly[StoreF[F]].name.discrete
+    
+  def render[F[_]: Render](state: State, props: Props): ReactElement =
+    div(s"props = $props, state = $state")
+}
 ```
+
+`render` method is similar to one you use in Slinky, however, state and
+props are passed as parameters, instead of being available as fields on
+`this`.
+
+`subscribe` can return any Stream of what you defined your `State` as,
+including time-based, or fixed constant values. Most commonly you
+will use a combination of state cells from your store algebra,
+by calling `.discrete`, possibly stripping away unnecessary information
+with `map` and/or some additional optimization (e.g. `.distinct`, `.debounce`)
+
+`Subscribe` typeclass, that is available in `subscribe` method, is
+equivalent to having `Concurrent[F]` and `Store[F]` in scope.
+`Render` is equivalent to having `Subscribe[F]` plus a limited version of
+`ConcurrentEffect[F]` (called `Exec`), which only allows to run actions
+without receiving any feedback.
+
+This restriction only exists in tagless version. Direct version is
+simpler:
+
+```scala
+object StateDisplay extends Connector.Container {
+  type Props = Int
+  type State = String
+  
+  def subscribe: fs2.Stream[IO, State] =
+    implicitly[Store].name.discrete
+    
+  def render(state: State, props: Props): ReactElement =
+    div(s"props = $props, state = $state")
+}
+```
+
+`Concurrent` and `Exec` instances are still available in whole
+container's body. That means, you don't need e.g. `ContextShift[IO]` to
+fork fibers, or monix `Scheduler` to run `Task`s.
+
+Finally, there are several base classes in each `Connector`:
+ - `Container` has both State and Props
+ - `ContainerNoProps` has State only. Best fit for top-level containers
+ - `ContainerNoState` has Props only. Useful when you only want to dispatch
+    actions
+    
+The signature of `render` in `NoXX` variants have been adjusted
+accordingly, and you can't implement `subscribe` in `ContainerNoState`
+    
+Tagless version also provides additional variants:
+  - `ContainerF`
+  - `ContainerFNoProps`
+  
+For both of them, you have to implement `type State[F[_]]` instead of
+paramenterless `type State`. They are occasionally useful if you want to
+keep some kind of action around to attach as a callback.
+
+A case class can be used to implement Props/State, and it's the
+recommended approach. However, `subscribe` implementation becomes tricky:
+
+```scala
+object StateDisplay extends Connector.ContainerNoProps {
+  case class State(name: String, count: Int)
+  
+  def subscribe: fs2.Stream[IO, State] = 
+    somehowCombine(getAlgebra.count, getAlgebra.name)
+    
+  def render(props: Props): ReactElement =
+    div(s"props = $props, state = $state")
+}
+```
+
+For "somehowCombine", we want to get the most fresh values from each
+signal. This can be done using `Applicative[Signal[F, *]]`:
+
+```scala
+def subscribe: fs2.Stream[IO, State] = 
+  (getAlgebra.count, getAlgebra.name).mapN(State(_, _)).discrete
+```
+
+Here, while we are still working with fs2 `Signal`, it can be done.
+However, plain fs2 Streams have nothing similar out of the box, so we
+have to convert them to Signal first with `hold`/`holdOption`.
+<!--TODO do I want to write the code for holds impl?-->
+
+Signals are also much less flexible than streams, so it's preferable to
+work with the latter.
+
+Shironeko provides utility function `combine` for parallel combination
+of any N streams into a case class, tuple, or anything else with `.apply`
+method on a companion that accepts N parameters, removing the need to
+`.hold` things manually. It's described in utilities section of this doc.
+
+(N.B. in other Rx libraries a similar in spirit operator is called
+`combineLatest`)
+
+<!--TODO comment lifecycle-->
