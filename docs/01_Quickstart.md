@@ -13,8 +13,7 @@ $ sbt new shadaj/create-react-scala-app.g8
 And add shironeko as a dependency:
 
 ```scala
-//TODO: Not yet released
-libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.1.0"
+libraryDependencies += "com.olegpy" %%% "shironeko-slinky" % "0.1.0-RC1"
 ```
 
 This will transitively pull shironeko-core, cats-effect and fs2. You
