@@ -58,7 +58,7 @@ While not needed for basic use of Shironeko, streams come with many
 combinators, e.g.
 - You can strip and/or transform data coming to you with `map` and
 `evalMap`
-- You can optimize away unwanted updates with `.filter` or `.distinct`
+- You can optimize away unwanted updates with `.filter` or `.changes`
 - You can reduce the frequency of updates with `.debounce`*
 - You can use `Stream.resource(..)` to have a mount/unmount lifecycle
 hook, and `evalTap` to get an update hook.
@@ -240,7 +240,7 @@ props are passed as parameters, instead of being available as fields on
 including time-based, or fixed constant values. Most commonly you
 will use a combination of state cells from your store algebra,
 by calling `.discrete`, possibly stripping away unnecessary information
-with `map` and/or some additional optimization (e.g. `.distinct`, `.debounce`)
+with `map` and/or some additional optimization (e.g. `.changes`, `.debounce`)
 
 `Subscribe` typeclass, that is available in `subscribe` method, is
 equivalent to having `Concurrent[F]` and `Store[F]` in scope.
