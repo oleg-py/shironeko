@@ -56,7 +56,7 @@ combinators, e.g.</p>
 <ul>
   <li>You can strip and/or transform data coming to you with <code class="highlighter-rouge">map</code> and
 <code class="highlighter-rouge">evalMap</code></li>
-  <li>You can optimize away unwanted updates with <code class="highlighter-rouge">.filter</code> or <code class="highlighter-rouge">.distinct</code></li>
+  <li>You can optimize away unwanted updates with <code class="highlighter-rouge">.filter</code> or <code class="highlighter-rouge">.changes</code></li>
   <li>You can reduce the frequency of updates with <code class="highlighter-rouge">.debounce</code>*</li>
   <li>You can use <code class="highlighter-rouge">Stream.resource(..)</code> to have a mount/unmount lifecycle
 hook, and <code class="highlighter-rouge">evalTap</code> to get an update hook.</li>
@@ -237,7 +237,7 @@ props are passed as parameters, instead of being available as fields on
 including time-based, or fixed constant values. Most commonly you
 will use a combination of state cells from your store algebra,
 by calling <code class="highlighter-rouge">.discrete</code>, possibly stripping away unnecessary information
-with <code class="highlighter-rouge">map</code> and/or some additional optimization (e.g. <code class="highlighter-rouge">.distinct</code>, <code class="highlighter-rouge">.debounce</code>)</p>
+with <code class="highlighter-rouge">map</code> and/or some additional optimization (e.g. <code class="highlighter-rouge">.changes</code>, <code class="highlighter-rouge">.debounce</code>)</p>
 
 <p><code class="highlighter-rouge">Subscribe</code> typeclass, that is available in <code class="highlighter-rouge">subscribe</code> method, is
 equivalent to having <code class="highlighter-rouge">Concurrent[F]</code> and <code class="highlighter-rouge">Store[F]</code> in scope.
