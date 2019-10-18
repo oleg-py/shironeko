@@ -4,3 +4,4 @@ target
 .jvm
 .bloop/
 .metals/
+todo-mvc/build/

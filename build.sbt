@@ -4,7 +4,7 @@ import xerial.sbt.Sonatype._
 inThisBuild(Seq(
   organization := "com.olegpy",
   scalaVersion := "2.12.8",
-  version := "0.1.0-RC1",
+  version := "0.1.0-RC2",
   crossScalaVersions := Seq("2.12.8"),
 ))
 
@@ -57,7 +57,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
   .settings(commonSettings)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.2",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.3",
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   )
 
@@ -77,7 +77,7 @@ lazy val jsdocs = project
     ),
 
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.6.2",
+      "me.shadaj" %%% "slinky-web" % "0.6.3",
     ),
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
