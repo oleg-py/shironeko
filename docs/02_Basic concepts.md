@@ -4,6 +4,17 @@ title: Basic concepts
 position: 2
 ---
 
+```scala mdoc:js:shared:invisible
+import com.olegpy.shironeko._
+import cats.implicits._
+import cats.effect._
+import cats.effect.implicits._
+import scala.concurrent.{ExecutionContext => EC}
+
+implicit val csIO: ContextShift[IO] = IO.contextShift(EC.global)
+implicit val timerIO: Timer[IO] = IO.timer(EC.global)
+```
+
 ### Actions
 Actions represent what needs to be done in response to something
 happening in your application.
@@ -89,7 +100,7 @@ class Store[F[_]] // <- like this, a.k.a. kind (* -> *) -> *
 To simplify definition of multiple state cells, Shironeko provides a
 small DSL.
 
-```scala
+```scala mdoc:js:shared
 class Store(dsl: StoreDSL[IO]) {
   import dsl._
   
@@ -105,8 +116,8 @@ class Store(dsl: StoreDSL[IO]) {
 }
 
 object Store {
-  // `construct` is a factory method
-  // TODO CHECK INFERENCE HERE
+  // StoreDSL is a resource; `run(f)` is a shorthand for
+  // StoreDSL[IO].use(dsl => IO.pure(f(dsl)))
   def make: IO[Store] = StoreDSL.run(new Store(_))
 }
 ```
@@ -324,4 +335,27 @@ method on a companion that accepts N parameters, removing the need to
 (N.B. in other Rx libraries a similar in spirit operator is called
 `combineLatest`)
 
-<!--TODO comment lifecycle-->
+#### Lifecycle
+While containers don't expose React lifecycle hooks
+Lifecycle of a container is directly tied to it's state stream.
+
+- The container will not be rendered until stream emits
+- The container is rendered on every value being emitted
+- The stream is properly finalized whenever the container is unmounted
+- As of 0.1.0, there's no lifecycle for props
+
+With that knowledge, here's how important hooks can be reconstructed:
+
+```scala
+object SimpleLifecycle extends Connector.ContainerNoProps {
+  type State = String
+  
+  def subscribe: fs2.Stream[IO, State] = {
+    val s = fs2.Stream.eval_(IO(println("Container is mounting"))) ++
+      getAlgebra.name.discrete.evalTap(state => IO(println(s"Container is rendering with state $state")))
+      
+    s.onFinalize(IO(println("Container is unmounting")))
+  }
+}
+```
+

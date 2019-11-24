@@ -3,7 +3,12 @@ layout: docs
 title: Misc. utilities
 position: 4
 ---
-
+```scala mdoc:js:shared:invisible
+import com.olegpy.shironeko.util.Cache
+import slinky.core._
+import slinky.core.facade._
+import slinky.web.html._
+```
 ## `combine` - parallel merging of fs2.Streams
 `combine` takes a name of class, which companion has apply
 method (e.g. tuple or case class) and builds a stream of values
@@ -93,8 +98,7 @@ in this class from todo-mvc example:
 `Cache` is a macro-based polymorphic cache. It uses
 call position in the code as a primary key.
 
-<!--TODO check inference-->
-```scala
+```scala mdoc:js:shared
 class Foo extends StatelessComponent { 
   type Props = Unit
   private val cache = new Cache
@@ -116,8 +120,8 @@ It also has support for adding a key and a list of dependencies to
 watch. You must use key in loops, and add any values your lambda
 captures that are subject to change to a dependency list
 
-```scala
-class Foo extends StatelessComponent { 
+```scala mdoc:js:shared
+class Bar extends StatelessComponent { 
   type Props = Int
   private val cache = new Cache
   
