@@ -1,12 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import xerial.sbt.Sonatype._
 
-inThisBuild(Seq(
-  organization := "com.olegpy",
-  scalaVersion := "2.12.8",
-  version := "0.1.0-RC2",
-  crossScalaVersions := Seq("2.12.8"),
-))
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -14,14 +8,7 @@ lazy val root = project.in(file("."))
     shironekoCoreJVM,
     shironekoSlinkyJS,
   )
-  .settings(commonSettings)
-  .settings(
-    skip in publish := true,
-    publish := {},
-    publishLocal := {},
-    publishArtifact := false,
-    publishTo := None,
-  )
+  .settings(commonSettings ++ crossBuild ++ noPublish)
   .enablePlugins(MicrositesPlugin)
   .settings(
     micrositeName := "Shironeko",
@@ -43,7 +30,7 @@ lazy val shironekoCoreJVM = shironekoCore.jvm
 lazy val shironekoCore = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
-  .settings(commonSettings)
+  .settings(commonSettings ++ crossBuild)
   .settings(
     name := "shironeko-core"
   )
@@ -54,7 +41,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("slinky"))
   .dependsOn(shironekoCore)
-  .settings(commonSettings)
+  .settings(commonSettings ++ crossBuild)
   .settings(
     name := "shironeko-slinky",
     libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.3",
@@ -64,7 +51,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
 lazy val jsdocs = project
   .enablePlugins(ScalaJSBundlerPlugin)
   .dependsOn(shironekoSlinkyJS)
-  .settings(commonSettings)
+  .settings(commonSettings ++ noCrossBuild ++ noPublish)
   .settings(
     name := "shironeko-slinky-jsdocs",
     scalaJSUseMainModuleInitializer := true,
@@ -90,7 +77,7 @@ lazy val todoMVC = project
   .in(file("todo-mvc"))
   .enablePlugins(ScalaJSBundlerPlugin)
   .dependsOn(shironekoSlinkyJS)
-  .settings(commonSettings)
+  .settings(commonSettings ++ noCrossBuild ++ noPublish)
   .settings(
     name := "shironeko-slinky-todomvc",
     resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped"),
@@ -114,7 +101,7 @@ lazy val todoMVC = project
     libraryDependencies ++= Seq(
       "me.shadaj" %%% "slinky-web" % "0.6.2",
       "me.shadaj" %%% "slinky-hot" % "0.6.2",
-      "io.monix" %%% "monix-eval" % "3.0.0-RC3",
+      "io.monix" %%% "monix-eval" % "3.0.0",
       ScalablyTyped.R.`react-router-dom`,
       ScalablyTyped.R.`react-slinky-facade`,
     ),
@@ -134,17 +121,40 @@ lazy val todoMVC = project
     addCommandAlias("build", "fullOptJS::webpack"),
   )
 
+def noPublish = List(
+  skip in publish := true,
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false,
+  publishTo := None,
+)
+
+def crossBuild = List(
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.12.8", "2.13.1"),
+)
+
+def noCrossBuild = List(
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.12.8"),
+)
+
 def commonSettings = List(
   name := "shironeko",
+  organization := "com.olegpy",
+  version := "0.1.0-RC3",
 
   resolvers += Resolver.sonatypeRepo("snapshots"),
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("http://github.com/oleg-py/shironeko")),
 
   libraryDependencies ++= Seq(
-    "org.typelevel" %%% "cats-effect" % "1.3.1",
-    "co.fs2"        %%% "fs2-core"    % "1.0.5",
-    compilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
+    scalaOrganization.value % "scala-reflect" % scalaVersion.value % "provided",
+    scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
+
+    "org.typelevel" %%% "cats-effect" % "2.0.0",
+    "co.fs2"        %%% "fs2-core"    % "2.1.0",
+    compilerPlugin("org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full),
   ),
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),
