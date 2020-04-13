@@ -3,8 +3,8 @@ package com.olegpy.shironeko
 import cats.effect.{Concurrent, ConcurrentEffect}
 import com.olegpy.shironeko.interop.Exec
 import fs2.Pure
-import slinky.core.{KeyAddingStage}
-import slinky.core.facade.{ReactElement}
+import slinky.core.KeyAddingStage
+import slinky.core.facade.ReactElement
 
 
 class DirectConnector[F[_], Algebra] { self =>
@@ -23,9 +23,13 @@ class DirectConnector[F[_], Algebra] { self =>
     type State
     type Props
 
+    protected def getClassName = self.getClass.getSimpleName
+
     private[this] object Impl extends Underlying.Container {
       override type State = self.State
       override type Props = self.Props
+
+      override protected def getClassName: String = self.getClassName
 
       override def subscribe[f[_] : Subscribe]: fs2.Stream[f, State] = {
         self.subscribe.asInstanceOf[fs2.Stream[f, State]]

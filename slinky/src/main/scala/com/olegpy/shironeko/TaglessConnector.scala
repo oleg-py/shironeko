@@ -1,7 +1,7 @@
 package com.olegpy.shironeko
 
 import cats.effect.{Concurrent, ConcurrentEffect, IO}
-import slinky.core.{FunctionalComponent, KeyAddingStage}
+import slinky.core.{FunctionalComponent, FunctionalComponentName, KeyAddingStage}
 import slinky.core.facade.{Hooks, React, ReactElement}
 import cats.implicits._
 import com.olegpy.shironeko.interop.Exec
@@ -10,98 +10,98 @@ import com.olegpy.shironeko.interop.Exec
 class TaglessConnector[Algebra[_[_]]] { conn =>
   def reportUncaughtException(e: Throwable): Unit = e.printStackTrace()
 
-  // We use an "unknown" erased type to represent whatever the algebra is used with
-  private[shironeko] type Z[_]
+  sealed trait SubscribeM {
+    type f[_]
+    def algebra: Algebra[f]
+    def concurrent: Concurrent[f]
+  }
 
-  // Dummy types used as cast safety evidences for several implicits
-  sealed trait Subscribe[f[_]] // = (Concurrent[f], Algebra[f])
-  sealed trait Render[f[_]] extends Subscribe[f] // = (Concurrent[f], Algebra[f], Exec[f])
+  sealed trait RenderM extends SubscribeM {
+    def exec: Exec[f]
+  }
 
-  private[this] val ctxAlg = React.createContext(null.asInstanceOf[Algebra[Z]])
-  private[this] val ctxF = React.createContext(null.asInstanceOf[ConcurrentEffect[Z]])
+  type Subscribe[F[_]] = SubscribeM { type f[a] = F[a] }
+  type Render[F[_]] = RenderM { type f[a] = F[a] }
+
+  private class RenderInstance[F[_]](
+    override val algebra: Algebra[F],
+    override val concurrent: ConcurrentEffect[F],
+  ) extends RenderM {
+    type f[a] = F[a]
+    override val exec: Exec[f] = Exec.fromEffect(concurrent)
+  }
+
+  trait RenderHelpers {
+    // Copying this over, for ergonomics
+    final type Subscribe[f[_]] = conn.Subscribe[f]
+    final type Render[f[_]] = conn.Render[f]
+
+    protected implicit def getAlgebra[F[_]: Subscribe]: Algebra[F] =
+      implicitly[Subscribe[F]].algebra
+
+    protected implicit def getConcurrent[F[_]: Subscribe]: Concurrent[F] =
+      implicitly[Subscribe[F]].concurrent
+
+    protected implicit def getExec[F[_]: Render]: Exec[F] =
+      implicitly[Render[F]].exec
+  }
+
+  private[this] val ctx = React.createContext(null: RenderM)
 
   private[this] val providerFunc =
-    FunctionalComponent[(Algebra[Z], ConcurrentEffect[Z], ReactElement)] {
-      case (alg, f, elem) =>
-        ctxF.Provider(f)(ctxAlg.Provider(alg)(elem))
-    }
+    FunctionalComponent[(RenderM, ReactElement)] {
+      case (render, elem) => ctx.Provider(render)(elem)
+    }(new FunctionalComponentName(conn.getClass.getSimpleName))
 
   def apply[F[_]](elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra[F]): ReactElement =
     apply(store)(elem)(F)
 
   def apply[F[_]: ConcurrentEffect](store: Algebra[F])(elem: ReactElement): ReactElement =
-    providerFunc((store.asInstanceOf[Algebra[Z]], ConcurrentEffect[F].asInstanceOf[ConcurrentEffect[Z]], elem))
+    providerFunc(new RenderInstance[F](store, ConcurrentEffect[F]) -> elem)
 
 
-  trait ContainerF extends Exec.Boilerplate {
+  trait ContainerF extends Exec.Boilerplate with RenderHelpers {
     type State[F[_]]
     type Props
 
-    // Copying this over, for ergonomics
-    final type Subscribe[f[_]] = conn.Subscribe[f]
-    final type Render[f[_]] = conn.Render[f]
+    protected def getClassName = this.getClass.getSimpleName
 
-    private[this] var CEInstance: ConcurrentEffect[Z] = _
-    private[this] var AlgInstance: Algebra[Z] = _
-    private[this] var ExecInstance: Exec[Z] = _
+    lazy val fcName = new FunctionalComponentName(getClassName)
 
-    protected implicit def getAlgebra[F[_]: Subscribe]: Algebra[F] =
-      AlgInstance.asInstanceOf[Algebra[F]]
+    @inline private[this] def unsafeRun[Z[_]: RenderInstance](effect: Z[Unit]) = {
+      implicitly[RenderInstance[Z]].concurrent.runCancelable(effect) {
+        case Left(ex) => IO(reportUncaughtException(ex))
+        case Right(value) => IO.pure(value)
+      }.unsafeRunSync()
+    }
 
-    protected implicit def getConcurrent[F[_]: Subscribe]: Concurrent[F] =
-      CEInstance.asInstanceOf[Concurrent[F]]
-
-    protected implicit def getExec[F[_]: Render]: Exec[F] =
-      ExecInstance.asInstanceOf[Exec[F]]
-
-    private[this] val impl = FunctionalComponent[Props] { props => {
-      val F = Hooks.useContext(ctxF)
-      if (F eq null) {
+    private[this] lazy val impl = FunctionalComponent[Props](props => {
+      val ctxVal = Hooks.useContext(ctx)
+      if (ctxVal == null) {
         throw new IllegalStateException(
           s"ConcurrentEffect instance was not provided to component. Make sure ${conn.getClass.getName}.apply is called above every container"
         )
       }
-      val alg = Hooks.useContext(ctxAlg)
-      Hooks.useMemo(() => { // TODO - can we remove this to let you use multiple algebras?
-        CEInstance = F
-        AlgInstance = alg
-        ExecInstance = Exec.fromEffect(F)
-      }, Seq(F, alg))
-      val rendered = Hooks.useRef(false)
 
-      implicit val dummy: Render[Z] = null
-
-      val (storeState, setStoreState) = Hooks.useState(none[State[Z]])
-
-      var actualState = storeState
-      def unsafeRunWithReport (effect: Z[Unit]) = {
-        F.runCancelable(effect) {
-          case Left(ex) => IO(reportUncaughtException(ex))
-          case Right(value) => IO.pure(value)
-        }.unsafeRunSync()
+      implicit val renderZ: RenderInstance[ctxVal.f] = ctxVal match {
+        case ri: RenderInstance[ctxVal.f] => ri
       }
-      val token: Z[Unit] = Hooks.useMemo(() => {
-        // This part is expected to run synchronously if possible to avoid extra flashing
-        // That is true for monix w/ default config and cats IO if used with fs2 Signals
-        // but if it's not possible to avoid async boundary for next write, we'll set
-        // the state later, after render
-        val effect = subscribe[Z]
-          .evalMap(e => F.delay {
-            val s = e.some
-            actualState = s
-            if (rendered.current) setStoreState(s)
-          })
-          .compile.drain
 
-        unsafeRunWithReport(effect)
-      }, Seq())
+      type Z[a] = ctxVal.f[a]
 
-      rendered.current = true
-      Hooks.useEffect(() => {
-        () => unsafeRunWithReport(token)
-      }, Seq())
-      actualState.map(state => render[Z](state, props))
-    } }
+      val (state, setState) = Hooks.useState(none[State[Z]])
+
+      Hooks.useLayoutEffect(() => {
+        val token = unsafeRun {
+          subscribe[Z].evalMap(s => renderZ.concurrent.delay {
+            setState(s.some)
+          }).compile.drain
+        }
+        () => { unsafeRun(token); () }
+      }, Seq(ctxVal))
+
+      state.map(state => render[Z](state, props))
+    })(fcName)
 
     def apply(props: Props): KeyAddingStage = impl(props)
 
@@ -118,36 +118,22 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
       render(state)
   }
 
-  trait Container extends Exec.Boilerplate { self =>
+  trait Container extends Exec.Boilerplate with RenderHelpers { self =>
     type State
     type Props
 
-    // Copying these over, for ergonomics
-    final type Subscribe[f[_]] = conn.Subscribe[f]
-    final type Render[f[_]] = conn.Render[f]
+    protected def getClassName = self.getClass.getSimpleName
 
     private[this] object underlying extends ContainerF {
       type State[F[_]] = self.State
       type Props = self.Props
 
+      override protected def getClassName = self.getClassName
+
       def subscribe[F[_]: Subscribe] = self.subscribe[F]
       def render[F[_]: Render](state: State[F], props: Props) =
-        self.render(state, props)
-
-      // Forcing these guys into `public`
-      override def getAlgebra[F[_] : Subscribe]: Algebra[F] = super.getAlgebra
-      override def getConcurrent[F[_] : Subscribe]: Concurrent[F] = super.getConcurrent
-      override def getExec[F[_] : Render]: Exec[F] = super.getExec
+        self.render[F](state, props)
     }
-
-    protected implicit def getAlgebra[F[_]: Subscribe]: Algebra[F] =
-      underlying.getAlgebra[F]
-
-    protected implicit def getConcurrent[F[_]: Subscribe]: Concurrent[F] =
-      underlying.getConcurrent[F]
-
-    protected implicit def getExec[F[_]: Render]: Exec[F] =
-      underlying.getExec[F]
 
     def apply(props: Props): KeyAddingStage = underlying.apply(props)
 

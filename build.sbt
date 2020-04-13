@@ -66,8 +66,10 @@ lazy val jsdocs = project
     libraryDependencies ++= Seq(
       "me.shadaj" %%% "slinky-web" % "0.6.3",
     ),
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+    scalacOptions ++= Seq(
+      "-P:scalajs:sjsDefinedByDefault",
+      "-Ymacro-annotations",
+    ),
     webpackBundlingMode := BundlingMode.LibraryOnly(),
     scalaJSModuleKind := ModuleKind.CommonJSModule,
 //    scalaJSLinkerConfig ~= { _.withOptimizer(false) },
@@ -99,14 +101,16 @@ lazy val todoMVC = project
     ),
 
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.6.2",
-      "me.shadaj" %%% "slinky-hot" % "0.6.2",
+      "me.shadaj" %%% "slinky-web" % "0.6.4",
+      "me.shadaj" %%% "slinky-hot" % "0.6.4",
       "io.monix" %%% "monix-eval" % "3.0.0",
       ScalablyTyped.R.`react-router-dom`,
       ScalablyTyped.R.`react-slinky-facade`,
     ),
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+    scalacOptions ++= Seq(
+      "-P:scalajs:sjsDefinedByDefault",
+      "-Ymacro-annotations",
+    ),
 
     version in webpack := "4.29.6",
     version in startWebpackDevServer:= "3.2.1",
@@ -135,14 +139,14 @@ def crossBuild = List(
 )
 
 def noCrossBuild = List(
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.12.8"),
+  scalaVersion := "2.13.1",
+  crossScalaVersions := Seq("2.13.1"),
 )
 
 def commonSettings = List(
   name := "shironeko",
   organization := "com.olegpy",
-  version := "0.1.0-RC3",
+  version := "0.1.0-RC4",
 
   resolvers += Resolver.sonatypeRepo("snapshots"),
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
