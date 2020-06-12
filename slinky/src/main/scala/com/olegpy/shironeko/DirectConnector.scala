@@ -13,11 +13,15 @@ class DirectConnector[F[_], Algebra] { self =>
     override def reportUncaughtException(e: Throwable): Unit = self.reportUncaughtException(e)
   }
 
-  def apply(elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra): ReactElement =
+  private var ef: Underlying.Render[F] = _
+
+  def apply(elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra): ReactElement = {
+    ef = new Underlying.RenderInstance(store, F)
     Underlying(elem)(F, store)
+  }
 
   def apply(store: Algebra)(elem: ReactElement)(implicit F: ConcurrentEffect[F]): ReactElement =
-    Underlying(store)(elem)(F)
+    apply(elem)(F, store)
 
   trait Container extends Exec.Boilerplate { self =>
     type State
@@ -44,9 +48,9 @@ class DirectConnector[F[_], Algebra] { self =>
       override def getExec[f[_] : Render]: Exec[f] = super.getExec
     }
 
-    protected implicit def getAlgebra: Algebra = Impl.getAlgebra[F](null)
-    protected implicit def getConcurrent: Concurrent[F] = Impl.getConcurrent[F](null)
-    protected implicit def getExec: Exec[F] = Impl.getExec[F](null)
+    protected implicit def getAlgebra: Algebra = ef.algebra
+    protected implicit def getConcurrent: Concurrent[F] = ef.concurrent
+    protected implicit def getExec: Exec[F] = ef.exec
 
     def apply(props: Props): KeyAddingStage = Impl(props)
 

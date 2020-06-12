@@ -23,7 +23,7 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
   type Subscribe[F[_]] = SubscribeM { type f[a] = F[a] }
   type Render[F[_]] = RenderM { type f[a] = F[a] }
 
-  private class RenderInstance[F[_]](
+  private[shironeko] class RenderInstance[F[_]](
     override val algebra: Algebra[F],
     override val concurrent: ConcurrentEffect[F],
   ) extends RenderM {
