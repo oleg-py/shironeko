@@ -7,6 +7,11 @@ if (process.env.NODE_ENV === "production") {
     exports.require = require("./shironeko-slinky-todomvc-fastopt-entrypoint.js").require;
     window.global = window;
 
+    if (!window.process) {
+        // FIXME use cats-effect once released 2.1.3 has a bug on IOApp in browser
+        window.process = { on: function() { } }
+    }
+
     const fastOpt = require("./shironeko-slinky-todomvc-fastopt.js");
     fastOpt.main()
     module.exports = fastOpt;
