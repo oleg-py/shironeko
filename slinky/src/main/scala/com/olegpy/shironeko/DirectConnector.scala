@@ -16,7 +16,7 @@ class DirectConnector[F[_], Algebra] { self =>
   private var ef: Underlying.Render[F] = _
 
   def apply(elem: ReactElement)(implicit F: ConcurrentEffect[F], store: Algebra): ReactElement = {
-    ef = new Underlying.RenderInstance(store, F)
+    ef = new Underlying.RenderInstance[F](store, F)
     Underlying(elem)(F, store)
   }
 
