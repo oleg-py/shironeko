@@ -64,7 +64,7 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
     type State[F[_]]
     type Props
 
-    protected def getClassName = this.getClass.getSimpleName
+    protected def getClassName: String = this.getClass.getSimpleName
 
     lazy val fcName = new FunctionalComponentName(getClassName)
 
@@ -122,16 +122,16 @@ class TaglessConnector[Algebra[_[_]]] { conn =>
     type State
     type Props
 
-    protected def getClassName = self.getClass.getSimpleName
+    protected def getClassName: String = self.getClass.getSimpleName
 
     private[this] object underlying extends ContainerF {
       type State[F[_]] = self.State
       type Props = self.Props
 
-      override protected def getClassName = self.getClassName
+      override protected def getClassName: String = self.getClassName
 
-      def subscribe[F[_]: Subscribe] = self.subscribe[F]
-      def render[F[_]: Render](state: State[F], props: Props) =
+      def subscribe[F[_]: Subscribe]: fs2.Stream[F, State[F]] = self.subscribe[F]
+      def render[F[_]: Render](state: State[F], props: Props): ReactElement =
         self.render[F](state, props)
     }
 

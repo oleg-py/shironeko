@@ -1,10 +1,13 @@
 package com.olegpy.shironeko.todomvc
 
-import com.olegpy.shironeko.todomvc.components._
 import cats.implicits._
-import slinky.web.html._
+import com.olegpy.shironeko.todomvc.components._
 import monix.eval.Task
-import slinky.core.facade.{Fragment, ReactElement}
+import org.scalajs.dom.Event
+import slinky.core.SyntheticEvent
+import slinky.core.facade.Fragment
+import slinky.core.facade.ReactElement
+import slinky.web.html._
 
 
 object TodoApp extends Connector.Container {
@@ -32,9 +35,7 @@ object TodoApp extends Connector.Container {
               className := "toggle-all",
               `type` := "checkbox",
               checked := allCompleted,
-              onChange := { e =>
-                exec(TodoActions().setAllStatus(e.target.checked))
-              }
+              onChange := { handleCheckboxChange(_) }
             ),
             label(
               htmlFor := "toggle-all",
@@ -56,5 +57,11 @@ object TodoApp extends Connector.Container {
       ),
       TodoInfo()
     )
+  }
+
+
+
+  private[this] def handleCheckboxChange(e: SyntheticEvent[input.tag.RefType, Event]): Unit = {
+    exec(TodoActions().setAllStatus(e.target.checked))
   }
 }

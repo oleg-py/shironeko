@@ -1,6 +1,11 @@
+import sbt.Keys.scalacOptions
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 import xerial.sbt.Sonatype._
 
+lazy val scala212 = "2.12.11"
+lazy val scala213 = "2.13.2"
+lazy val supportedScalaVersions = List(scala212, scala213)
+val customScalaJSVersion = Option(System.getenv("SCALAJS_VERSION"))
 
 lazy val root = project.in(file("."))
   .aggregate(
@@ -11,6 +16,7 @@ lazy val root = project.in(file("."))
   .settings(commonSettings ++ crossBuild ++ noPublish)
   .enablePlugins(MicrositesPlugin)
   .settings(
+    crossScalaVersions := Nil,
     micrositeName := "Shironeko",
     micrositeCompilingDocsTool := WithMdoc,
     micrositeGithubOwner := "oleg-py",
@@ -32,8 +38,17 @@ lazy val shironekoCore = crossProject(JSPlatform, JVMPlatform)
   .in(file("core"))
   .settings(commonSettings ++ crossBuild)
   .settings(
-    name := "shironeko-core"
-  )
+    name := "shironeko-core",
+).jvmSettings(
+  skip.in(publish) := customScalaJSVersion.forall(_.startsWith("1.")) // avoid to publish multiple times for jvm
+)
+
+lazy val commonNpmDependencies = Seq(
+  "react" -> "16.8.6",
+  "react-dom" -> "16.8.6",
+  "react-proxy" -> "1.1.8",
+  "webpack-merge" -> "4.2.2",
+)
 
 lazy val shironekoSlinkyJS = shironekoSlinky.js
 
@@ -44,8 +59,8 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
   .settings(commonSettings ++ crossBuild)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.3",
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.5",
+    scalacOptions ++= { if (scalaJSVersion.startsWith("0.6.")) Seq("-P:scalajs:sjsDefinedByDefault") else Nil }
   )
 
 lazy val jsdocs = project
@@ -55,65 +70,45 @@ lazy val jsdocs = project
   .settings(
     name := "shironeko-slinky-jsdocs",
     scalaJSUseMainModuleInitializer := true,
-
-    npmDependencies in Compile ++= Seq(
-      "react" -> "16.8.6",
-      "react-dom" -> "16.8.6",
-      "react-proxy" -> "1.1.8",
-      "webpack-merge" -> "4.2.1",
-    ),
-
+    npmDependencies in Compile ++= commonNpmDependencies,
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.6.3",
+      "me.shadaj" %%% "slinky-web" % "0.6.5",
     ),
-    scalacOptions ++= Seq(
-      "-P:scalajs:sjsDefinedByDefault",
-      "-Ymacro-annotations",
-    ),
+    scalacOptions ++= { if (scalaJSVersion.startsWith("0.6.")) Seq("-P:scalajs:sjsDefinedByDefault") else Nil },
     webpackBundlingMode := BundlingMode.LibraryOnly(),
-    scalaJSModuleKind := ModuleKind.CommonJSModule,
-//    scalaJSLinkerConfig ~= { _.withOptimizer(false) },
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    //    scalaJSLinkerConfig ~= { _.withOptimizer(false) },
   )
 
 lazy val todoMVC = project
   .in(file("todo-mvc"))
-  .enablePlugins(ScalaJSBundlerPlugin)
+  .enablePlugins(ScalaJSBundlerPlugin, ScalablyTypedConverterPlugin)
   .dependsOn(shironekoSlinkyJS)
   .settings(commonSettings ++ noCrossBuild ++ noPublish)
   .settings(
     name := "shironeko-slinky-todomvc",
-    resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped"),
+    stFlavour := Flavour.Slinky,
+    npmDependencies in Compile ++= commonNpmDependencies ++ Seq(
 
-    npmDependencies in Compile ++= Seq(
-      "react" -> "16.8.6",
-      "react-dom" -> "16.8.6",
-      "react-proxy" -> "1.1.8",
+      "file-loader" -> "6.0.0",
+      "style-loader" -> "1.1.1",
+      "css-loader" -> "3.5.2",
+      "html-webpack-plugin" -> "4.2.0",
+      "copy-webpack-plugin" -> "5.1.1",
 
-      "file-loader" -> "3.0.1",
-      "style-loader" -> "0.23.1",
-      "css-loader" -> "2.1.1",
-      "html-webpack-plugin" -> "3.2.0",
-      "copy-webpack-plugin" -> "5.0.2",
-      "webpack-merge" -> "4.2.1",
-
-      "react-router-dom" -> "5.0.1",
+      "react-router-dom" -> "5.1.2",
+      "@types/react-router-dom" -> "5.1.2",
       "todomvc-app-css" -> "2.2.0"
     ),
 
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.6.4",
-      "me.shadaj" %%% "slinky-hot" % "0.6.4",
-      "io.monix" %%% "monix-eval" % "3.0.0",
-      ScalablyTyped.R.`react-router-dom`,
-      ScalablyTyped.R.`react-slinky-facade`,
+      "me.shadaj" %%% "slinky-web" % "0.6.5",
+      "me.shadaj" %%% "slinky-hot" % "0.6.5",
+      "io.monix" %%% "monix-eval" % "3.2.2",
     ),
-    scalacOptions ++= Seq(
-      "-P:scalajs:sjsDefinedByDefault",
-      "-Ymacro-annotations",
-    ),
-
-    version in webpack := "4.29.6",
-    version in startWebpackDevServer:= "3.2.1",
+    scalacOptions ++= { if (scalaJSVersion.startsWith("0.6.")) Seq("-P:scalajs:sjsDefinedByDefault") else Nil },
+    version in webpack                     := "4.42.1",
+    version in startWebpackDevServer       := "3.10.3",
     webpackResources := baseDirectory.value / "webpack" * "*",
     webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack" / "webpack-fastopt.config.js"),
     webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack" / "webpack-opt.config.js"),
@@ -134,13 +129,13 @@ def noPublish = List(
 )
 
 def crossBuild = List(
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.12.8", "2.13.1"),
+  scalaVersion := scala213,
+  crossScalaVersions := supportedScalaVersions,
 )
 
 def noCrossBuild = List(
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.13.1"),
+  scalaVersion := scala213,
+  crossScalaVersions := Seq(scala213),
 )
 
 def commonSettings = List(
@@ -156,10 +151,23 @@ def commonSettings = List(
     scalaOrganization.value % "scala-reflect" % scalaVersion.value % "provided",
     scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
 
-    "org.typelevel" %%% "cats-effect" % "2.0.0",
-    "co.fs2"        %%% "fs2-core"    % "2.1.0",
+    "org.typelevel" %%% "cats-effect" % "2.1.3",
+    "co.fs2"        %%% "fs2-core"    % "2.3.0",
     compilerPlugin("org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full),
   ),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, n)) if n >= 13 => Seq("-Ymacro-annotations")
+      case _ => Nil
+    }
+  },
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v <= 12 =>
+        Seq(compilerPlugin(("org.scalamacros" % "paradise" % "2.1.1").cross(CrossVersion.full)))
+      case _ => Nil
+    }
+  },
 
   //testFrameworks += new TestFramework("minitest.runner.Framework"),
   scalacOptions --= Seq(
