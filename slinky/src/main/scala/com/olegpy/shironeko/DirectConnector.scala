@@ -27,7 +27,7 @@ class DirectConnector[F[_], Algebra] { self =>
     type State
     type Props
 
-    protected def getClassName = self.getClass.getSimpleName
+    protected def getClassName: String = self.getClass.getSimpleName
 
     private[this] object Impl extends Underlying.Container {
       override type State = self.State

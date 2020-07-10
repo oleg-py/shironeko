@@ -1,37 +1,41 @@
 package com.olegpy.shironeko.todomvc
 
-import scala.scalajs.js
-
 import com.olegpy.shironeko.util.shift
 import slinky.core.ExternalComponent
 import slinky.core.annotations.react
-import typings.reactLib.ScalableSlinky._
-import typings.reactDashRouterDashDomLib.reactDashRouterDashDomLibComponents.{Link => JSLink, _}
-import typings.reactDashRouterLib.reactDashRouterMod.RouteProps
+import slinky.core.facade.ReactElement
+import typings.reactRouter.mod.RouteProps
+import typings.reactRouterDom.components.HashRouter
+import typings.reactRouterDom.components.Route
+import typings.reactRouterDom.components.{Link => JSLink}
+
+import scala.scalajs.js
 
 object Routes {
-  def apply() = shift {
-    HashRouter.noprops(
-      Route[RouteProps].props(RouteProps(
+
+  def apply(): ReactElement = shift {
+    HashRouter(
+      Route(RouteProps(
         exact = true,
         path = "/",
         render = _ => TodoApp(Filter.All)
       )),
-      Route[RouteProps].props(RouteProps(
+      Route(RouteProps(
         path = "/active",
         render = _ => TodoApp(Filter.Active)
       )),
-      Route[RouteProps].props(RouteProps(
+      Route(RouteProps(
         path = "/completed",
         render = _ => TodoApp(Filter.Completed)
       ))
     )
   }
+
   @react object Link extends ExternalComponent {
     case class Props(
       to: String,
       className: js.UndefOr[String]
     )
-    val component = JSLink
+    val component = JSLink.component
   }
 }

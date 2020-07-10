@@ -1,11 +1,14 @@
 package com.olegpy.shironeko.todomvc.components
 
 import com.olegpy.shironeko.todomvc.TodoItem
-import slinky.core.{Component, StatelessComponent, SyntheticEvent}
+import org.scalajs.dom.Event
+import slinky.core.Component
+import slinky.core.SyntheticEvent
 import slinky.core.annotations.react
 import slinky.core.facade.ReactElement
+import slinky.web.SyntheticFocusEvent
+import slinky.web.SyntheticKeyboardEvent
 import slinky.web.html._
-import cats.implicits._
 
 @react class TodoList extends Component {
   case class Props(
@@ -36,9 +39,7 @@ import cats.implicits._
               className := "toggle",
               `type` := "checkbox",
               checked := item.isCompleted,
-              onChange := { e =>
-                props.onCheck(item.id, e.target.checked)
-              }
+              onChange := handleCheckboxChange(item.id)
             ),
             label(item.text, onDoubleClick := { () =>
               setState(State(Some((item.id, item.text))))
@@ -50,20 +51,31 @@ import cats.implicits._
           input(
             className := "edit",
             value := state.editing.filter(_._1 == item.id).fold(item.text)(_._2),
-            onChange := { e =>
-              val txt = e.target.value
-              setState(State(Some((item.id, txt))))
-            },
-            onBlur := { commit(_) },
-            onKeyPress := { e =>
-              if (e.key == "Enter") commit(e)
-            }
+            onChange := handleEditChange(item.id),
+            onBlur := { handleBlur(_) },
+            onKeyPress := { handleKeyPress(_) }
           )
         )
       }
     )
   }
-  private[this] def commit(e: SyntheticEvent[input.tag.RefType, Any]) = {
+
+  private[this] def handleCheckboxChange(itemId: Long): SyntheticEvent[input.tag.RefType, Event] => Unit = {
+    e => props.onCheck(itemId, e.target.checked)
+  }
+
+  private[this] def handleEditChange(itemId: Long): SyntheticEvent[input.tag.RefType, Event] => Unit = e => {
+    val txt = e.target.value
+    setState(State(Some((itemId, txt))))
+  }
+
+  private[this] def handleBlur(e: SyntheticFocusEvent[input.tag.RefType]): Unit = commit()
+
+  private[this] def handleKeyPress(e: SyntheticKeyboardEvent[input.tag.RefType]): Unit = {
+    if (e.key == "Enter") commit()
+  }
+
+  private[this] def commit(): Unit = {
     state.editing.foreach(props.onEdit.tupled)
     setState(initialState)
   }
