@@ -4,10 +4,9 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportTopLevel, JSImport}
 import scala.scalajs.LinkingInfo
 
-import cats.effect.ExitCode
+import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._
-import com.olegpy.shironeko.StoreDSL
-import monix.eval.{Task, TaskApp}
+import com.olegpy.shironeko.slinky.SlinkyConnector
 import slinky.web.ReactDOM
 import slinky.hot
 import org.scalajs.dom
@@ -16,23 +15,27 @@ import org.scalajs.dom
 @js.native
 object IndexCSS extends js.Object
 
-object Main extends TaskApp {
+object Main extends IOApp.Simple {
   val css = IndexCSS
 
   @JSExportTopLevel("main")
-  def main(): Unit = super.main(Array())
+  def main(): Unit = main(Array())
 
-  override def run(args: List[String]): Task[ExitCode] = {
-    initHotLoading >>
-    StoreDSL[Task].use(new TodoStore(_).pure[Task])
-      .product(getRoot)
-      .flatMap { case (store, container) =>
-        TodoLocalStorage.setup(store) >>
-        Task(ReactDOM.render(Connector(store)(Routes()), container))
-      } >> Task.never[ExitCode]
-  }
 
-  val getRoot = Task {
+  override def run: IO[Unit] =
+    SlinkyConnector.make[IO]
+      .preAllocate(initHotLoading)
+      .evalMap { conn =>
+        for {
+          todoStoreR <- conn.regStore(TodoStore.make)
+          _          <- conn.regStore(todoStoreR.map(TodoActions.make))
+          root       <- getRoot
+          _          <- IO(ReactDOM.render(conn.Provider(Routes()), root))
+        } yield ()
+      }
+      .useForever
+
+  private val getRoot = IO {
     Option(dom.document.getElementById("root")).getOrElse {
       val elem = dom.document.createElement("div")
       elem.id = "root"
@@ -41,7 +44,7 @@ object Main extends TaskApp {
     }
   }
 
-  val initHotLoading = Task {
+  private val initHotLoading = IO {
     if (LinkingInfo.developmentMode) {
       hot.initialize()
     }

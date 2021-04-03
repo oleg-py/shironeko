@@ -13,35 +13,33 @@ import slinky.core.facade.{Hooks, ReactElement}
 
 
 class SlinkyKernel[F[_]] extends ConnectorContainerKernel[F, ReactElement] {
-  override type Container[P] = BaseSlinkyContainer[F] { type Props = P }
-  override type Connector = SlinkyConnector[F]
+  override final type Container[P] = BaseSlinkyContainer[F] { type Props = P }
+  override final type Connector = SlinkyConnector[F]
 
   override def mount[P](connector: Connector, container: Container[P], props: P, fold: Later[ReactElement] => ReactElement): ReactElement = {
     def buildFC = {
       implicit val F: Async[F] = connector.asyncInstance
-      // TODO nice FC name
-      val setStatePromise = Promise[Later[container.PrerenderState] => Unit]()
-      val onProps = Promise[P => Unit]()
-
-      val feed = for {
-        queue <- Queue.circularBuffer[F, P](1)
-        unsafeOffer = (queue.offer _) andThen connector.dispatcher.unsafeRunAndForget
-        _ <- Async[F].delay(onProps.success(unsafeOffer))
-        emitter = Async[F].fromFuture(setStatePromise.future.pure[F])
-        _ <- container.prerender(connector, fs2.Stream.repeatEval(queue.take))
-          .map(Later.Ready(_))
-          .handleErrorWith(e => fs2.Stream(Later.Failed(e)))
-          .evalMap(emitter.mapApply)
-          .compile.drain
-      } yield ()
 
       FunctionalComponent[(P, Later.Fold[ReactElement])] { case (props, fold) =>
         val (state, setState) = Hooks.useState[Later[container.PrerenderState]](Later.Loading)
+        val onProps = Hooks.useMemo(() => Promise[P => Unit](), Seq())
+
+
         Hooks.useLayoutEffect(() => {
-          setStatePromise.success(setState(_))
+          val feed = for {
+            queue <- Queue.circularBuffer[F, P](1)
+            unsafeOffer = (queue.offer _) andThen connector.dispatcher.unsafeRunAndForget
+            _ <- Async[F].delay(onProps.success(unsafeOffer))
+            _ <- container.prerender(connector, fs2.Stream.repeatEval(queue.take))
+              .map(Later.Ready(_))
+              .handleErrorWith(e => fs2.Stream(Later.Failed(e)))
+              .evalMap(r => F.delay(setState(r)))
+              .compile.drain
+          } yield ()
           val cancel = connector.dispatcher.unsafeRunCancelable(feed)
           cancel.void
         }, Seq())
+
         Hooks.useLayoutEffect(() => {
           onProps.future.foreach(_(props))(ExecutionContext.parasitic)
         }, Seq(props))

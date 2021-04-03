@@ -1,37 +1,57 @@
 package com.olegpy.shironeko.todomvc
 
+import scala.annotation.nowarn
 import scala.scalajs.js
+import scala.scalajs.js.annotation.JSImport
 
-import com.olegpy.shironeko.util.shift
-import slinky.core.ExternalComponent
+import slinky.core.{ExternalComponent, ExternalComponentNoProps, ExternalComponentWithAttributes, FunctionalComponent}
 import slinky.core.annotations.react
-import typings.reactLib.ScalableSlinky._
-import typings.reactDashRouterDashDomLib.reactDashRouterDashDomLibComponents.{Link => JSLink, _}
-import typings.reactDashRouterLib.reactDashRouterMod.RouteProps
+import slinky.core.facade.ReactElement
+import slinky.web.html.a
 
-object Routes {
-  def apply() = shift {
-    HashRouter.noprops(
-      Route[RouteProps].props(RouteProps(
-        exact = true,
-        path = "/",
-        render = _ => TodoApp(Filter.All)
-      )),
-      Route[RouteProps].props(RouteProps(
-        path = "/active",
-        render = _ => TodoApp(Filter.Active)
-      )),
-      Route[RouteProps].props(RouteProps(
-        path = "/completed",
-        render = _ => TodoApp(Filter.Completed)
-      ))
+@react object Routes {
+  type Props = Unit
+  val component = FunctionalComponent[Unit] { _ =>
+    import ReactRouter._
+    HashRouter(
+      Route(path = Seq("/", "/:segment"), render = { p =>
+        org.scalajs.dom.console.log(p.`match`.params)
+        Option[Any](p.`match`.params.segment).collect {
+          case "active" => Filter.Active
+          case "completed" => Filter.Completed
+          case () => Filter.All
+        }.map { filter => TodoApp(filter) }
+      }, exact = true),
     )
   }
-  @react object Link extends ExternalComponent {
+}
+
+object ReactRouter {
+  @JSImport("react-router-dom", JSImport.Default)
+  @js.native
+  @nowarn
+  object Raw extends js.Object {
+    val HashRouter: js.Object    = js.native
+    val Route: js.Object         = js.native
+    val Link: js.Object          = js.native
+  }
+
+  object HashRouter extends ExternalComponentNoProps {
+    val component = Raw.HashRouter
+  }
+
+  @react object Route extends ExternalComponent {
     case class Props(
-      to: String,
-      className: js.UndefOr[String]
+      path: Seq[String],
+      render: js.Dynamic => ReactElement,
+      exact: Boolean = false
     )
-    val component = JSLink
+
+    val component = Raw.Route
+  }
+
+  @react object Link extends ExternalComponentWithAttributes[a.tag.type] {
+    case class Props(to: String)
+    val component = Raw.Link
   }
 }

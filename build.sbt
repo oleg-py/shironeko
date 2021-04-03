@@ -12,7 +12,7 @@ lazy val root = project.in(file("."))
   .enablePlugins(MicrositesPlugin)
   .settings(
     micrositeName := "Shironeko",
-    micrositeCompilingDocsTool := WithMdoc,
+//    micrositeCompilingDocsTool := WithMdoc,
     micrositeGithubOwner := "oleg-py",
     micrositeGithubRepo := "shironeko",
     micrositeBaseUrl := "/shironeko",
@@ -74,18 +74,17 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
 //    scalaJSLinkerConfig ~= { _.withOptimizer(false) },
   )*/
 
-/*lazy val todoMVC = project
+lazy val todoMVC = project
   .in(file("todo-mvc"))
   .enablePlugins(ScalaJSBundlerPlugin)
   .dependsOn(shironekoSlinkyJS)
   .settings(commonSettings ++ noCrossBuild ++ noPublish)
   .settings(
     name := "shironeko-slinky-todomvc",
-    resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped"),
 
     npmDependencies in Compile ++= Seq(
-      "react" -> "16.8.6",
-      "react-dom" -> "16.8.6",
+      "react" -> "16.13.1",
+      "react-dom" -> "16.13.1",
       "react-proxy" -> "1.1.8",
 
       "file-loader" -> "3.0.1",
@@ -95,23 +94,20 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
       "copy-webpack-plugin" -> "5.0.2",
       "webpack-merge" -> "4.2.1",
 
-      "react-router-dom" -> "5.0.1",
-      "todomvc-app-css" -> "2.2.0"
+      "react-router-dom" -> "5.1.2",
+      "todomvc-app-css" -> "2.2.0",
     ),
 
     libraryDependencies ++= Seq(
-      "me.shadaj" %%% "slinky-web" % "0.6.4",
-      "me.shadaj" %%% "slinky-hot" % "0.6.4",
-      ScalablyTyped.R.`react-router-dom`,
-      ScalablyTyped.R.`react-slinky-facade`,
+      "me.shadaj" %%% "slinky-web" % "0.6.7",
+      "me.shadaj" %%% "slinky-hot" % "0.6.7",
     ),
     scalacOptions ++= Seq(
-      "-P:scalajs:sjsDefinedByDefault",
       "-Ymacro-annotations",
     ),
 
-    version in webpack := "4.29.6",
-    version in startWebpackDevServer:= "3.2.1",
+    version in webpack := "4.43.0",
+    version in startWebpackDevServer:= "3.11.0",
     webpackResources := baseDirectory.value / "webpack" * "*",
     webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack" / "webpack-fastopt.config.js"),
     webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack" / "webpack-opt.config.js"),
@@ -121,7 +117,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
 
     addCommandAlias("dev", ";fastOptJS::startWebpackDevServer;~fastOptJS"),
     addCommandAlias("build", "fullOptJS::webpack"),
-  )*/
+  )
 
 def noPublish = List(
   skip in publish := true,

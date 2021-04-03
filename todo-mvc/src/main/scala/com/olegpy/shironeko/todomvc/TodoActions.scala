@@ -1,39 +1,40 @@
 package com.olegpy.shironeko.todomvc
 
-import monix.eval.Task
+import cats.effect.IO
+import com.olegpy.shironeko.Store
 
 
-class TodoActions (private val S: TodoStore) extends AnyVal {
-  def setText(id: Long, text: String): Task[Unit] =
+class TodoActions (S: TodoStore) {
+  def setText(id: Long, text: String): IO[Unit] =
     S.todos.update(_.collect {
       case todo if todo.id == id => todo.copy(text = text)
       case other => other
     })
 
-  def createTodo(text: String): Task[Unit] =
+  def createTodo(text: String): IO[Unit] =
     S.freshId
      .map(TodoItem(_, text))
      .flatMap(todo => S.todos.update(_ :+ todo))
 
-  def setAllStatus(complete: Boolean): Task[Unit] =
+  def setAllStatus(complete: Boolean): IO[Unit] =
     S.todos.update(_.map(_.copy(isCompleted = complete)))
 
-  def setStatus(id: Long, complete: Boolean): Task[Unit] =
+  def setStatus(id: Long, complete: Boolean): IO[Unit] =
     S.todos.update(_.map {
       case TodoItem(`id`, text, _) => TodoItem(id, text, complete)
       case other => other
     })
 
-  def destroy(id: Long): Task[Unit] =
+  def destroy(id: Long): IO[Unit] =
     S.todos.update(_.filterNot(_.id == id))
 
-  def setFilter(f: Filter): Task[Unit] =
+  def setFilter(f: Filter): IO[Unit] =
     S.filter.set(f)
 
-  def clearCompleted: Task[Unit] =
+  def clearCompleted: IO[Unit] =
     S.todos.update(_.filterNot(_.isCompleted))
 }
 
-object TodoActions {
-  def apply()(implicit S: TodoStore) = new TodoActions(S)
+object TodoActions extends Store.Companion[TodoActions] {
+  def make(base: TodoStore) = new TodoActions(base)
 }
