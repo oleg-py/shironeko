@@ -5,7 +5,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.control.NonFatal
 
 import cats.{ApplicativeThrow, MonadThrow}
-import cats.data.{EitherNel, EitherT, NonEmptyList}
+import cats.data.{EitherNel, EitherT, Ior, IorT, NonEmptyList}
 import cats.implicits._
 import cats.effect.implicits._
 import cats.effect.{Deferred, Outcome, Ref, Resource}
@@ -42,7 +42,15 @@ object ResourcePool {
 
   def apply[F[_]: Temporal]: Resource[F, ResourcePool[F]] =
     Resource.make(Ref[F].of(new State[F])) { ref =>
-      ref.getAndUpdate(_.die).flatMap { _.finalizeAll }
+      IorT(ref.getAndUpdate(_.die).flatMap(_.finalizeAll))
+        .iterateWhile(done => done)
+        .value.map(_.left)
+        .flatMap(_.traverse_ {
+          case NonEmptyList(hd, hd2 :: rest) =>
+            new CompositeFailure(hd, NonEmptyList(hd2, rest)).raiseError[F, Unit]
+          case NonEmptyList(hd, Nil) =>
+            hd.raiseError[F, Unit]
+        })
     }.map { stateRef =>
       def fix[A](f: (=> F[A]) => F[A]): F[A] = {
         lazy val fa: F[A] = f(fa)
@@ -77,7 +85,7 @@ object ResourcePool {
                           case Outcome.Succeeded(fa) =>
                             fa.flatMap { case (a, fin) =>
                               stateRef.update(_.setState(key, PooledState.Open(a, fin, 1))) >>
-                              retry // retry
+                              retry
                             }
                           case Outcome.Errored(e) =>
                             stateRef.update(_.setState(key, PooledState.Dead(e)))
@@ -134,7 +142,7 @@ object ResourcePool {
                   case _ if state.dead => state -> state.playDead[A]
                   case Some(ps @ PooledState.Opening(src, rc)) =>
                     state.setState(key, ps.copy(refCount = rc + 1)) ->
-                    poll(src.joinWithNever.map(_._1)).onCancel(release)
+                    poll(src.joinWith(selfCancel).map(_._1)).onCancel(release)
                   case Some(ps @ PooledState.Open(src, _, rc)) =>
                     state.setState(key, ps.copy(refCount = rc + 1)) ->
                     src.pure[F]
@@ -234,9 +242,13 @@ object ResourcePool {
       if (dead) playDead[Unit]
       else F.unit
 
-    def finalizeAll(implicit F: Spawn[F]): F[Unit] = {
+    def finalizeAll(implicit F: Spawn[F]): F[Ior[NonEmptyList[Throwable], Boolean]] = {
       import cats.effect.instances.spawn.parallelForGenSpawn // TODO - is this a good idea?
       def attemptNel(fu: F[Unit]): F[EitherNel[Throwable, Unit]] = fu.attempt.map(_.toEitherNel)
+      val allGood = states.values.forall {
+        case PooledState.CriticalSection(_) => false
+        case _ => true
+      }
       states.values.to(ArraySeq).parTraverse_ {
         case PooledState.Opening(src, _) =>
           EitherT(src.cancel >> src.join.flatMap[EitherNel[Throwable, Unit]] {
@@ -248,13 +260,10 @@ object ResourcePool {
         case PooledState.AwaitingFinalization(_, fin, fib) => EitherT(attemptNel(fin >> fib.cancel))
         case PooledState.Finalizing(finished) => EitherT(attemptNel(finished.get))
         case PooledState.Dead(ex) => EitherT.fromEither[F](ex.leftNel[Unit])
-        case PooledState.CriticalSection(_) => ??? // FIXME - can't release here with critical sections
-      }.value.flatMap {
-        case Left(NonEmptyList(hd, Nil)) =>
-          F.raiseError(hd)
-        case Left(NonEmptyList(hd, hd2 :: more)) =>
-          F.raiseError(new CompositeFailure(hd, NonEmptyList(hd2, more)))
-        case Right(_) => F.unit
+        case PooledState.CriticalSection(wait) => EitherT(attemptNel(wait.get))
+      }.value.map {
+        case Left(errs) => Ior.both(errs, allGood)
+        case Right(_)   => Ior.right(allGood)
       }
     }
   }
