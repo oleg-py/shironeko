@@ -28,5 +28,5 @@ import slinky.core.facade.ReactElement
   */
 object shift {
   private[this] val Shift = FunctionalComponent[() => ReactElement] { _() }
-  def apply(f: => ReactElement): ReactElement = Shift(f _)
+  def apply(f: => ReactElement): ReactElement = Shift(() => f)
 }

@@ -1,9 +1,9 @@
 package com.olegpy.shironeko.interop
 
-import cats.effect.{Effect, IO}
+import cats.effect.std.Dispatcher
 
 
-abstract class Exec[F[_]] private[shironeko]() {
+trait Exec[F[_]] {
   def unsafeRunLater[A](fa: F[A]): Unit
 }
 
@@ -31,8 +31,7 @@ object Exec {
       (a, b, c, d, e) => exec(action(a, b, c, d, e))
   }
 
-  def fromEffect[F[_]](implicit F: Effect[F]): Exec[F] = new Exec[F] {
-    def unsafeRunLater[A](fa: F[A]): Unit =
-      F.runAsync(F.void(fa))(IO.fromEither).unsafeRunSync()
+  def fromDispatcher[F[_]](disp: Dispatcher[F]): Exec[F] = new Exec[F] {
+    override def unsafeRunLater[A](fa: F[A]): Unit = disp.unsafeRunAndForget(fa)
   }
 }
