@@ -15,7 +15,6 @@ import slinky.web.html.a
     import ReactRouter._
     HashRouter(
       Route(path = Seq("/", "/:segment"), render = { p =>
-        org.scalajs.dom.console.log(p.`match`.params)
         Option[Any](p.`match`.params.segment).collect {
           case "active" => Filter.Active
           case "completed" => Filter.Completed
