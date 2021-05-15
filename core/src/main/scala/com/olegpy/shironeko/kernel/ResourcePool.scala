@@ -16,6 +16,7 @@ import fs2.CompositeFailure
 
 trait ResourcePool[F[_]] {
   def lookup[A](key: Key[A]): F[Option[Resource[F, A]]]
+  // TODO return F[Resource[F, A]]
   def register[A](key: Key[A], resource: Resource[F, A], policy: ResourcePool.Policy): F[Unit]
 }
 

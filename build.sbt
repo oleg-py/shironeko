@@ -148,9 +148,11 @@ def commonSettings = List(
     "org.typelevel" %%% "cats-effect" % "3.0.0",
     "co.fs2"        %%% "fs2-core"    % "3.0.0",
     compilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full),
-  ),
 
-  //testFrameworks += new TestFramework("minitest.runner.Framework"),
+    "com.disneystreaming" %% "weaver-cats" % "0.7.2" % Test,
+  ),
+  testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+
   scalacOptions --= Seq(
     "-Xfatal-warnings",
     "-Ywarn-unused:params",
