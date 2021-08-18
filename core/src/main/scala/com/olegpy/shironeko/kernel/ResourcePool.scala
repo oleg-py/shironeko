@@ -44,7 +44,7 @@ object ResourcePool {
   def apply[F[_]: Temporal]: Resource[F, ResourcePool[F]] =
     Resource.make(Ref[F].of(new State[F])) { ref =>
       IorT(ref.getAndUpdate(_.die).flatMap(_.finalizeAll))
-        .iterateWhile(done => done)
+        .iterateUntil(done => done)
         .value.map(_.left)
         .flatMap(_.traverse_ {
           case NonEmptyList(hd, hd2 :: rest) =>
@@ -75,6 +75,7 @@ object ResourcePool {
               action <- stateRef.modify { state =>
                 state.getState(key) match {
                   // Illegal states: None, any with refcount < 1, any with awaiting finalization
+                  case None => state -> ().pure[F] // TODO try removing that
                   case _ if state.dead => state -> state.playDead[Unit]
                   case Some(s @ PooledState.Opening(f, 1)) =>
                     state.getPolicy(key).finalization match {

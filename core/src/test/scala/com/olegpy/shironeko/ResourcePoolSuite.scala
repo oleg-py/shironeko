@@ -12,13 +12,29 @@ object ResourcePoolSuite extends SimpleIOSuite {
 
   test("ResourcePool closes constituent resources on finalization") {
     setupPool.use { pool =>
-      pool.lookup(Tracer.storeInstance.resourceKey[IO])
-        .flatMap(_.traverse(_.use(_.ref.pure[IO])))
+      def poke[A](s: Store.Companion[A]) =
+        pool.lookup(s.storeInstance.resourceKey[IO]).flatMap(_.get.use_)
+      for {
+        _ <- poke(R1)
+        _ <- poke(R2)
+        _ <- poke(R3)
+        _ <- poke(R4)
+        tracer <- pool.lookup(Tracer.storeInstance.resourceKey[IO])
+        ref <- tracer.get.use(_.ref.pure[IO])
+      } yield ref
     }
-      .flatMap(_.traverse(_.get))
-      .map(_.orEmpty)
+      .flatMap(_.get)
       .map { ops =>
-        expect.same(null, ops) // FIXME deadlock on finalizer
+        expect.same(Chain(
+          Allocate(R1),
+          Deallocate(R1),
+          Allocate(R2),
+          Deallocate(R2),
+          Allocate(R3),
+          Allocate(R4),
+          Deallocate(R4),
+          Deallocate(R3),
+        ), ops)
       }
   }
 
@@ -43,6 +59,12 @@ object ResourcePoolSuite extends SimpleIOSuite {
   object Tracer extends Store.Companion[Tracer] {
     def make: Resource[IO, Tracer] =
       Resource.eval(Ref[IO].of(Chain.empty[Op])) map Tracer.apply
+
+    override def storeAcquisitionPolicy: ResourcePool.Policy =
+      ResourcePool.Policy(
+        ResourcePool.Finalization.Never,
+        ResourcePool.Reacquisition.Synchronously,
+      )
   }
 
   sealed trait Op
@@ -59,7 +81,7 @@ object ResourcePoolSuite extends SimpleIOSuite {
   }
 
   sealed trait R1 extends Factory[R1]
-  object R1 extends Store.Companion[R1] with R1 {
+  case object R1 extends Store.Companion[R1] with R1 {
     override def storeAcquisitionPolicy: ResourcePool.Policy =
       ResourcePool.Policy(
         ResourcePool.Finalization.Immediately,
@@ -68,7 +90,7 @@ object ResourcePoolSuite extends SimpleIOSuite {
   }
 
   sealed trait R2 extends Factory[R2]
-  object R2 extends Store.Companion[R2] with R2 {
+  case object R2 extends Store.Companion[R2] with R2 {
     override def storeAcquisitionPolicy: ResourcePool.Policy =
       ResourcePool.Policy(
         ResourcePool.Finalization.Immediately,
@@ -77,7 +99,7 @@ object ResourcePoolSuite extends SimpleIOSuite {
   }
 
   sealed trait R3 extends Factory[R3]
-  object R3 extends Store.Companion[R3] with R3 {
+  case object R3 extends Store.Companion[R3] with R3 {
     override def storeAcquisitionPolicy: ResourcePool.Policy =
       ResourcePool.Policy(
         ResourcePool.Finalization.Never,
@@ -86,7 +108,7 @@ object ResourcePoolSuite extends SimpleIOSuite {
   }
 
   sealed trait R4 extends Factory[R4]
-  object R4 extends Store.Companion[R4] with R4 {
+  case object R4 extends Store.Companion[R4] with R4 {
     override def storeAcquisitionPolicy: ResourcePool.Policy =
       ResourcePool.Policy(
         ResourcePool.Finalization.After(10.seconds),

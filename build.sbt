@@ -135,7 +135,7 @@ def noCrossBuild = List(
 def commonSettings = List(
   name := "shironeko",
   organization := "com.olegpy",
-  version := "0.2.0-RC1",
+  version := "0.2.0-M1",
 
   resolvers += Resolver.sonatypeRepo("snapshots"),
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
