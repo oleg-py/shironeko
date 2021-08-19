@@ -1,6 +1,6 @@
 package com.olegpy.shironeko.slinky.streams
 
-import cats.effect.kernel.Concurrent
+import cats.effect.Temporal
 import com.olegpy.shironeko.{Stores, StoresSyntax}
 import com.olegpy.shironeko.interop.Exec
 import com.olegpy.shironeko.kernel.SomeEffectType
@@ -37,7 +37,7 @@ object SlinkyContainer {
 trait SlinkyContainerK extends StreamingSlinkyContainer[SomeEffectType] {
   type Props
 
-  def render[F[_]: Concurrent: Exec: Stores](props: fs2.Stream[F, Props]): fs2.Stream[F, ReactElement]
+  def render[F[_]: Temporal: Exec: Stores](props: fs2.Stream[F, Props]): fs2.Stream[F, ReactElement]
 
   final override def prerender(conn: SlinkyConnector[SomeEffectType], props: fs2.Stream[SomeEffectType, Props]): fs2.Stream[SomeEffectType, ReactElement] =
     render[SomeEffectType](props)(conn.asyncInstance, conn, conn)
@@ -47,9 +47,9 @@ object SlinkyContainerK {
   trait NoProps extends SlinkyContainerK {
     override final type Props = Unit
 
-    def render[F[_]: Concurrent: Exec: Stores]: fs2.Stream[F, ReactElement]
+    def render[F[_]: Temporal: Exec: Stores]: fs2.Stream[F, ReactElement]
 
-    final override def render[F[_] : Concurrent : Exec: Stores](props: fs2.Stream[F, Unit]): fs2.Stream[F, ReactElement] =
+    final override def render[F[_] : Temporal : Exec: Stores](props: fs2.Stream[F, Unit]): fs2.Stream[F, ReactElement] =
       render[F]
   }
 }
