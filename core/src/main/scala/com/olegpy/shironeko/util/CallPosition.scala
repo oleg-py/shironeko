@@ -9,6 +9,5 @@ case class CallPosition(
 )
 
 object CallPosition {
-  implicit def provideCallPos: CallPosition =
-    macro Macros.mkCallPosition
+  inline def provideCallPos: CallPosition = scala.compiletime.error("NYI")
 }

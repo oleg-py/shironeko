@@ -9,16 +9,16 @@ lazy val root = project.in(file("."))
     shironekoSlinkyJS,
   )
   .settings(commonSettings ++ noCrossBuild ++ noPublish)
-  .enablePlugins(MicrositesPlugin)
+//  .enablePlugins(MicrositesPlugin)
   .settings(
-    micrositeName := "Shironeko",
-//    micrositeCompilingDocsTool := WithMdoc,
-    micrositeGithubOwner := "oleg-py",
-    micrositeGithubRepo := "shironeko",
-    micrositeBaseUrl := "/shironeko",
-    micrositeGitterChannel := false, // TODO - maaaaybee
-    micrositeDataDirectory := { baseDirectory.value / "site" },
-    micrositeAuthor := "Oleg Pyzhcov",
+//    micrositeName := "Shironeko",
+////    micrositeCompilingDocsTool := WithMdoc,
+//    micrositeGithubOwner := "oleg-py",
+//    micrositeGithubRepo := "shironeko",
+//    micrositeBaseUrl := "/shironeko",
+//    micrositeGitterChannel := false, // TODO - maaaaybee
+//    micrositeDataDirectory := { baseDirectory.value / "site" },
+//    micrositeAuthor := "Oleg Pyzhcov",
 //    mdocJS := Some(jsdocs),
 //    mdocJSLibraries := webpack.in(jsdocs, Compile, fullOptJS).value,
 //    mdocVariables := Map("js-opt" -> "fast"),
@@ -44,7 +44,7 @@ lazy val shironekoSlinky = crossProject(JSPlatform)
   .settings(commonSettings ++ noCrossBuild)
   .settings(
     name := "shironeko-slinky",
-    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.7",
+    libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.6.8+7-01c27a43",
   )
 
 /*lazy val jsdocs = project
@@ -128,28 +128,29 @@ def noPublish = List(
 )
 
 def noCrossBuild = List(
-  scalaVersion := "2.13.5",
-  crossScalaVersions := Seq("2.13.5"),
 )
 
 def commonSettings = List(
   name := "shironeko",
   organization := "com.olegpy",
-  version := "0.2.0-M2",
+  version := "0.2.0-M3",
+
+  scalaVersion := "3.1.0",
+  crossScalaVersions := Seq("3.1.0"),
 
   resolvers += Resolver.sonatypeRepo("snapshots"),
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("http://github.com/oleg-py/shironeko")),
 
   libraryDependencies ++= Seq(
-    scalaOrganization.value % "scala-reflect" % scalaVersion.value % "provided",
-    scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
+//    scalaOrganization.value % "scala-reflect" % scalaVersion.value % "provided",
+//    scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
 
-    "org.typelevel" %%% "cats-effect" % "3.0.0",
-    "co.fs2"        %%% "fs2-core"    % "3.0.0",
-    compilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full),
+    "org.typelevel" %%% "cats-effect" % "3.2.9",
+    "co.fs2"        %%% "fs2-core"    % "3.2.2",
+//    compilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full),
 
-    "com.disneystreaming" %% "weaver-cats" % "0.7.2" % Test,
+    "com.disneystreaming" %% "weaver-cats" % "0.7.7" % Test,
   ),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
 
