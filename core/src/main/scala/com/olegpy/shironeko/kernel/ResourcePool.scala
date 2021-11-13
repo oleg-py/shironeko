@@ -6,8 +6,8 @@ import scala.util.control.NonFatal
 
 import cats.{ApplicativeThrow, MonadThrow}
 import cats.data.{EitherNel, EitherT, Ior, IorT, NonEmptyList}
-import cats.implicits._
-import cats.effect.implicits._
+import cats.implicits.given
+import cats.effect.implicits.given
 import cats.effect.{Deferred, Outcome, Ref, Resource}
 import cats.effect.kernel.{Concurrent, DeferredSink, DeferredSource, Fiber, GenConcurrent, Spawn, Temporal, Unique}
 import com.olegpy.shironeko.kernel.ResourcePool.Key
@@ -58,7 +58,7 @@ object ResourcePool {
         fa
       }
 
-      def mkPooled[A](key: Key[A]) = {
+      def mkPooled[A](key: Key[A]): Resource[F, A] = {
         def runAndUnsetOrDie(fin: F[Unit]) =
           (fin >> stateRef.update(_.unsetState(key))).onError {
             case NonFatal(ex) => stateRef.update(_.setState(key, PooledState.Dead(ex)))
@@ -72,7 +72,7 @@ object ResourcePool {
             for {
               fiberB <- FiberLater[F, Throwable, Unit]
               finished <- Deferred[F, Unit]
-              action <- stateRef.modify { state =>
+              action <- stateRef.modify[F[Unit]] { state =>
                 state.getState(key) match {
                   // Illegal states: None, any with refcount < 1, any with awaiting finalization
                   case None => state -> ().pure[F] // TODO try removing that
@@ -111,7 +111,7 @@ object ResourcePool {
                           stateRef.update(_.setState(key, PooledState.Finalizing(finished))) >>
                           runAndUnsetOrDie(finalizer) >>
                           completeOnce(finished)
-                        }.start.flatMap(fiberB.complete)
+                        }.start.flatMap(fiberB.complete).void
                       case Finalization.Never =>
                         state.setState(key, s.copy(refCount = 0)) -> ().pure[F]
                     }
@@ -270,14 +270,14 @@ object ResourcePool {
     }
   }
 
-  private sealed trait PooledState[+F[_], +A]
+  private sealed trait PooledState[F[_], +A]
   private object PooledState {
     case class Opening[F[_], A](src: Fiber[F, Throwable, (A, F[Unit])], refCount: Int) extends PooledState[F, A]
     case class Open[F[_], A](value: A, finalizer: F[Unit], refCount: Int) extends PooledState[F, A]
     case class AwaitingFinalization[F[_], A](value: A, finalizer: F[Unit], fiber: Fiber[F, Throwable, Unit]) extends PooledState[F, A]
     case class Finalizing[F[_]](finished: DeferredSource[F, Unit]) extends PooledState[F, Nothing]
     case class CriticalSection[F[_]](ended: DeferredSource[F, Unit]) extends PooledState[F, Nothing]
-    case class Dead(error: Throwable) extends PooledState[Nothing, Nothing]
+    case class Dead[F[_]](error: Throwable) extends PooledState[F, Nothing]
   }
 
   private trait FiberLater[F[_], E, A] extends Fiber[F, E, A] with DeferredSink[F, Fiber[F, E, A]]

@@ -16,7 +16,7 @@ object StoreK {
       override def name: String = self.name
 
       override def resourceKey[F[_]]: ResourcePool.Key[R[F]] =
-        unsafeSubst[λ[f[_] => ResourcePool.Key[R[f]]], F](unsafeKey)
+        unsafeSubst[[f[_]] =>> ResourcePool.Key[R[f]], F](unsafeKey)
 
       override def storeAcquisitionPolicy: ResourcePool.Policy = self.storeAcquisitionPolicy
     }

@@ -1,5 +1,5 @@
 package com.olegpy
 
 package object shironeko {
-  type Store[S] = StoreK[λ[f[_] => S]]
+  type Store[S] = StoreK[[f[_]] =>> S]
 }
