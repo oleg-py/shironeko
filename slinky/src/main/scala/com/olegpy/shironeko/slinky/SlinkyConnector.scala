@@ -33,7 +33,7 @@ class SlinkyConnector[F[_]: Async](
     SlinkyKernel[F].shareStoreK(this, allocate)
 
   def regStore[S: Store](allocate: Resource[F, S]): F[Resource[F, S]] =
-    regStoreK[λ[f[_] => S]](allocate)
+    regStoreK[[f[_]] =>> S](allocate)
 
 
   def Provider: BuildingComponent[Nothing, js.Object] =
@@ -48,7 +48,7 @@ object SlinkyConnector {
     React.createContext[js.UndefOr[SlinkyConnector[SomeEffectType]]](js.undefined)
 
   private def globalCtxIn[F[_]] =
-    unsafeSubst[λ[f[_] => ReactContext[js.UndefOr[SlinkyConnector[f]]]], F](globalCtx)
+    unsafeSubst[[f[_]] =>> ReactContext[js.UndefOr[SlinkyConnector[f]]], F](globalCtx)
 
   def make[F[_]: Async]: Resource[F, SlinkyConnector[F]] =
     (Dispatcher[F], ResourcePool[F]).mapN(new SlinkyConnector(_, _))
