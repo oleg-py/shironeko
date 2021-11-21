@@ -160,7 +160,7 @@ def commonSettings = List(
     "-Ywarn-unused:implicits",
   ),
 
-  publishTo := sonatypePublishTo.value,
+  publishTo := sonatypePublishToBundle.value,
   publishMavenStyle := true,
   sonatypeProjectHosting := Some(GitHubHosting("oleg-py", "shironeko", "oleg.pyzhcov@gmail.com")),
 )
